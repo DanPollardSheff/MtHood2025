@@ -146,3 +146,121 @@ build_population <- function(diag_diab_population_, PopulationVariables_, Global
   
   return(population)
 }
+
+#' Generate the baseline population for MtHood 2025 challenge instructions
+#' On the 16th May 2025, the instructions are at  https://www.mthooddiabeteschallenge.com/_files/ugd/4e5824_14eed2de8aa94f48b894eef0f5460d83.pdf
+#' @param n_ is the number of replications
+#' @param Female_ is a logical value. TRUE = the whole population is Female, FALSE = the whole population is male
+#' @param PopulationVariables_ is a list of all the population varaibles used in this model along with a description of units and meanings
+#' @return population is a matrix of patient characteristics for use in the model
+#' 
+build_population_MtHood2025 <- function(n_, Female_, PopulationVariables_) {
+  
+  #limit the raw population characteristics to be the same as the number se
+  #in the global varaibles
+    
+  year <- 0
+  population <- matrix(0, nrow = n_, ncol = length(PopulationVariables_[,"Variable"]))
+  colnames(population) <- PopulationVariables_[,"Variable"]
+  population[, "ID"] <- 1:n_
+  population[, "CONS"] <- 1
+  population[, "T"] <- 0
+  population[, "AGE_0"] <- 66 #Mt Hood 2025 Reference Simulation instructions
+  population[, "MALE"] <- ifelse(Female_==T,0,1)
+  population[, "FEMALE"] <- ifelse(Female_==T,1,0)
+  
+  #Read in a dummy variable for Afro-caribean descent (1= afro-caribean, 0=otherwise)
+  population[, "AFRO"] <- 0  #Mt Hood 2025 Reference Simulation instructions, person has white ehtnicity.
+  population[,"INDIAN"] <- 0 #Mt Hood 2025 Reference Simulation instructions, person has white ehtnicity.
+  #Set the binary variable for smoking status
+  population[, "SMO"] <- 0   #Mt Hood 2025 Reference Simulation instructions, person is a non-smoker.
+  #record the history of diabetes (1 = yes, 0 = no)
+  
+  population[, "AGE"] <- 66
+  population[, "MEN"] <- replace(population[, "MEN"], population[, "AGE"] > 51 & population[, "FEMALE"] == 1, 1)
+  population[, "HBA"] <- 7.5 #Mt Hood 2025 Reference Simulation instructions.
+  
+  #Record the BMI of the population
+  population[, "BMI"] <- 28
+  #Record the HDL cholesterol (add units)
+  population[, "HDL"] <- 1.3
+  #Record systolic blood pressure(add units)
+  population[, "SBP"] <- 145
+  
+  population[, "QALY"] <- 0 
+  population[, "EQ5D"] <- 0
+  
+  population[, "DEP_H"] <- runif(n_) < (435/4781) #Source: Ali et al 2009. Prevalence of diagnosed depression in South Asian
+  #and white European people with type 1 and type 2 diabetes mellitus in a UK secondary care population
+  
+  #Record the baseline BMI of the population in the HSE data
+  population[,"BMI_0"] <- 28
+  
+  #Instructions do not specify, so set everyone to be on 1st line therapy
+  population[, "MET"] <- 1
+  #Record whether someone is on 2nd line therapy for T2DM
+  population[,"MET2"] <- 0
+  #Record whether someone is on 3rd line therapy for T2DM
+  population[,"INSU"]<- 0
+  
+  #Mt Hood 2025 Reference Simulation instructions, no history at baseline. 
+  population[,"AMP_E"] <- 0
+  population[,"AMP_H"] <- 0
+  population[,"AMP2_H"] <- 0
+  population[,"IHD_E"] <- 0
+  population[,"IHD_H"] <- 0
+  population[,"CHF_E"] <- 0
+  population[,"CHF_H"] <- 0
+  population[,"RENAL_E"] <- 0
+  population[,"RENAL_H"] <- 0
+  population[,"STRO_E"] <- 0
+  population[,"STRO_H"] <- 0
+  population[,"MI_E"] <- 0
+  population[,"MI_H"] <- 0
+  population[,"MI2_E"] <- 0
+  population[,"MI2_H"] <- 0
+  population[,"BLIND_E"] <- 0
+  population[,"BLIND_H"] <- 0
+  population[,"MMALB_H"] <- 0
+  population[,"ATFIB_H"] <- 0
+  population[,"PVD_H"] <- 0
+  
+  #Add in diabetes treatment specific biomarkers
+  population[,"HAEM"] <- 14 
+  population[,"WBC"] <- 7
+  population[,"eGFR"] <- 70
+  population[,"eGFR_U_60"] <- ifelse(population[,"eGFR"]<60,population[,"eGFR"],60)
+  population[,"eGFR_O_60"] <- ifelse(population[,"eGFR"]>60,population[,"eGFR"]-60,0)
+  population[,"HEART_R"] <- 79
+  population[,"BMI_U_18_5"] <- ifelse(population[,"BMI"]<18.5,1,0)
+  population[,"BMI_O_E_25"] <- ifelse(population[,"BMI"]>=25,1,0)
+  population[,"LDL"] <- 3.0
+  population[,"LDL_O_35"] <- ifelse(population[,"LDL"]>3.5, population[,"LDL"]-3.5,0)
+  #add in diabetes treatment specific chars
+  population[,"DIAB_DUR"] <- 8
+  
+  #add in values for first observations for each risk factor needed
+  #in the absence of information this will be the baseline value
+  population[,"HBA_0"] <- population[,"HBA"]
+  population[,"LDL_0"] <- population[,"LDL"]
+  population[,"HDL_0"] <- population[, "HDL"]
+  population[,"HEART_R_0"] <- population[,"HEART_R"]
+  population[,"HAEM_0"] <- population[,"HAEM"]
+  population[,"WBC_0"] <- population[,"WBC"]
+  population[,"eGFR_0"] <- population[,"eGFR"]
+  population[,"SMO_0"] <- population[,"SMO"]
+  population[,"SBP_0"] <- population[,"SBP"]
+  
+  #Give noone a history of Ulcers
+  population[,"ULCER_H"] <-  0
+  
+  #Make all cause death missing, as missing indicates someone is alive in the code
+  population[, "F_ALLCAUSE"] <- NA
+  #Make smoking missing, so you can easily see whether smoking is assessed
+  population[,"p_SMO"]<- NA
+  
+  return(population)
+}
+
+
+
