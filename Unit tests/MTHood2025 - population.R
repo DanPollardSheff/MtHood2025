@@ -335,4 +335,5 @@ popF <- popF[,diffcols]
 
 if(mean(popF[,"MALE"])!=0 & mean(popF[,"FEMALE"])!=1 &mean(popF[,"MEN"])!=1){
   stop("Error in Gender/Menopause status, female population")
+
 }
