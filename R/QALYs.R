@@ -215,61 +215,197 @@ calculate_QALYs_MtHood2025 <- function(population_,  year_, alive_, GlobalVars_)
   #Calculate each person's utility this year
   
   if(GlobalVars_["Mt Hood Utility Values", "Value"]== "95% CI low"){
-    stop("the 95% CIs have for the Mt Hood Utility function not been implemented yet")
+    #Constant
+    population_[,"EQ5D"][alive_] <- 0.681
+    #BMI, per unit of BMI above 25 Kg/m2
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.008*(population_[,"BMI"][alive_]-25)
+    
+    #Retinopathy
+    dec_ret <- min(-0.124*(population_[,"BLIND_E"][alive_]),
+                   -0.124*(population_[,"BLIND_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_ret
+    
+    #Nephropathy
+    #Renal Failure event year weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 3
+    #Renal Failure historical event weights  hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 4
+    dec_neph <- min(-0.091*(population_[,"MMALB_E"][alive_]),
+                    -0.091*(population_[,"MMALB_H"][alive_]),
+                    (-0.137*(540/(540+39+6127+1548))+
+                       -0.274*((39+6127)/(540+39+6127+1548))+
+                       -0.342*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_]),
+                    (-0.137*(39874/(39874+1452+25825+3800))+
+                       -0.274*((1452+25825)/(39874+1452+25825+3800))+
+                       -0.342*(3800/(39874+1452+25825+3800)))*(population_[,"RENAL_H"][alive_]))
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neph
+    
+    rm(dec_neph)
+    
+    #Neuropathy
+    #This model only tracks an ulcer state, so only apply in year 1
+    dec_neuro <- min(-0.090*(population_[,"PVD_E"][alive_]),
+                     -0.090*(population_[,"PVD_H"][alive_]),
+                     -0.207*(population_[,"ULCER_E"][alive_]),
+                     -0.389*(population_[,"AMP_E"][alive_]),
+                     -0.389*(population_[,"AMP2_E"][alive_]))
+    
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neuro
+    rm(dec_neuro)
+    
+    
+    #Stroke
+    dec_cebro <- min(-0.222*(population_[,"STRO_E"][alive_]),
+                     -0.222*(population_[,"STRO_H"][alive_]),
+                     -0.222*(population_[,"STRO2_E"][alive_]),
+                     -0.222*(population_[,"STRO2_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_cebro
+    rm(dec_cebro)
+    
+    #Coronary heart disease
+    
+    dec_CHD <- min( -0.067*(population_[,"MI_E"][alive_]),
+                    -0.067*(population_[,"MI_H"][alive_]),
+                    -0.067*(population_[,"MI2_E"][alive_]),
+                    -0.067*(population_[,"MI2_H"][alive_]),
+                    -0.169*(population_[,"CHF_E"][alive_]),
+                    -0.169*(population_[,"CHF_H"][alive_]),
+                    -0.126*(population_[,"IHD_E"][alive_]),
+                    -0.126*(population_[,"IHD_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_CHD
+    rm(dec_CHD) 
   }
-  #Mean Values
+  else if (GlobalVars_["Mt Hood Utility Values", "Value"]== "95% CI high"){
+    #Constant
+    population_[,"EQ5D"][alive_] <- 0.889
+    #BMI, per unit of BMI above 25 Kg/m2
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.004*(population_[,"BMI"][alive_]-25)
+    
+    #Retinopathy
+    dec_ret <- min(-0.025*(population_[,"BLIND_E"][alive_]),
+                   -0.025*(population_[,"BLIND_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_ret
+    
+    #Nephropathy
+    #Renal Failure event year weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 3
+    #Renal Failure historical event weights  hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 4
+    dec_neph <- min(-0.005*(population_[,"MMALB_E"][alive_]),
+                    -0.005*(population_[,"MMALB_H"][alive_]),
+                    (-0.027*(540/(540+39+6127+1548))+
+                       -0.054*((39+6127)/(540+39+6127+1548))+
+                       -0.066*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_]),
+                    (-0.027*(39874/(39874+1452+25825+3800))+
+                       -0.054*((1452+25825)/(39874+1452+25825+3800))+
+                       -0.066*(3800/(39874+1452+25825+3800)))*(population_[,"RENAL_H"][alive_]))
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neph
+    
+    rm(dec_neph)
+    
+    #Neuropathy
+    #This model only tracks an ulcer state, so only apply in year 1
+    dec_neuro <- min(-0.032*(population_[,"PVD_E"][alive_]),
+                     -0.032*(population_[,"PVD_H"][alive_]),
+                     -0.133*(population_[,"ULCER_E"][alive_]),
+                     -0.170*(population_[,"AMP_E"][alive_]),
+                     -0.170*(population_[,"AMP2_E"][alive_]))
+    
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neuro
+    rm(dec_neuro)
+    
+    
+    #Stroke
+    dec_cebro <- min(-0.105*(population_[,"STRO_E"][alive_]),
+                     -0.105*(population_[,"STRO_H"][alive_]),
+                     -0.105*(population_[,"STRO2_E"][alive_]),
+                     -0.105*(population_[,"STRO2_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_cebro
+    rm(dec_cebro)
+    
+    #Coronary heart disease
+    
+    dec_CHD <- min( -0.042*(population_[,"MI_E"][alive_]),
+                    -0.042*(population_[,"MI_H"][alive_]),
+                    -0.042*(population_[,"MI2_E"][alive_]),
+                    -0.042*(population_[,"MI2_H"][alive_]),
+                    -0.048*(population_[,"CHF_E"][alive_]),
+                    -0.048*(population_[,"CHF_H"][alive_]),
+                    -0.054*(population_[,"IHD_E"][alive_]),
+                    -0.054*(population_[,"IHD_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_CHD
+    rm(dec_CHD) 
+  }
+  #Mean Values - default if either the 95% CI low or high are not specified
   else{
     #Constant
     population_[,"EQ5D"][alive_] <- 0.785
     #BMI, per unit of BMI above 25 Kg/m2
     population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.006*(population_[,"BMI"][alive_]-25)
-    #Blindness
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.074*(population_[,"BLIND_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.074*(population_[,"BLIND_H"][alive_])
-    #Proteinuria
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.048*(population_[,"MMALB_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.048*(population_[,"MMALB_H"][alive_])
-    #Renal failure
-    #Weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 3
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + (-0.082*(540/(540+39+6127+1548))+
-                                                                      -0.164*((39+6127)/(540+39+6127+1548))+
-                                                                       -0.204*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_])
     
-    #Weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 4
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] +(-0.082*(39874/(39874+1452+25825+3800))+
-                                                                      -0.164*((1452+25825)/(39874+1452+25825+3800))+
-                                                                      -0.204*(3800/(39874+1452+25825+3800)))*(population_[,"RENAL_H"][alive_])
-    #PVD
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.061*(population_[,"PVD_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.061*(population_[,"PVD_H"][alive_])
+    #Retinopathy
+    dec_ret <- min(-0.074*(population_[,"BLIND_E"][alive_]),
+                   -0.074*(population_[,"BLIND_H"][alive_]))
     
-    #Active Ulcer
-    #This model only tracks an ulcer event, so only apply in year 1
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.170*(population_[,"ULCER_E"][alive_])
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_ret
+
+    #Nephropathy
+    #Renal Failure event year weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 3
+    #Renal Failure historical event weights  hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 4
+    dec_neph <- min(-0.048*(population_[,"MMALB_E"][alive_]),
+               -0.048*(population_[,"MMALB_H"][alive_]),
+               (-0.082*(540/(540+39+6127+1548))+
+                  -0.164*((39+6127)/(540+39+6127+1548))+
+                  -0.204*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_]),
+               (-0.082*(39874/(39874+1452+25825+3800))+
+                  -0.164*((1452+25825)/(39874+1452+25825+3800))+
+                  -0.204*(3800/(39874+1452+25825+3800)))*(population_[,"RENAL_H"][alive_]))
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neph
     
-    #Amputation event
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.280*(population_[,"AMP_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.280*(population_[,"AMP2_E"][alive_])
+    rm(dec_neph)
+    
+    #Neuropathy
+    #This model only tracks an ulcer state, so only apply in year 1
+    dec_neuro <- min(-0.061*(population_[,"PVD_E"][alive_]),
+               -0.061*(population_[,"PVD_H"][alive_]),
+               -0.170*(population_[,"ULCER_E"][alive_]),
+               -0.280*(population_[,"AMP_E"][alive_]),
+               -0.280*(population_[,"AMP2_E"][alive_]))
+    
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neuro
+    rm(dec_neuro)
+    
     
     #Stroke
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.164*(population_[,"STRO_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.164*(population_[,"STRO_H"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.164*(population_[,"STRO2_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.164*(population_[,"STRO2_H"][alive_])
+    dec_cebro <- min(-0.164*(population_[,"STRO_E"][alive_]),
+                     -0.164*(population_[,"STRO_H"][alive_]),
+                     -0.164*(population_[,"STRO2_E"][alive_]),
+                     -0.164*(population_[,"STRO2_H"][alive_]))
     
-    #MI
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.055*(population_[,"MI_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.055*(population_[,"MI_H"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.055*(population_[,"MI2_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.055*(population_[,"MI2_H"][alive_])
-
-    #CHF
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.108*(population_[,"CHF_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.108*(population_[,"CHF_H"][alive_])
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_cebro
+    rm(dec_cebro)
     
-    #IHD
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.090*(population_[,"IHD_E"][alive_])
-    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + -0.090*(population_[,"IHD_H"][alive_])
+    #Coronary heart disease
+    
+    dec_CHD <- min( -0.055*(population_[,"MI_E"][alive_]),
+                    -0.055*(population_[,"MI_H"][alive_]),
+                    -0.055*(population_[,"MI2_E"][alive_]),
+                    -0.055*(population_[,"MI2_H"][alive_]),
+                    -0.108*(population_[,"CHF_E"][alive_]),
+                    -0.108*(population_[,"CHF_H"][alive_]),
+                    -0.090*(population_[,"IHD_E"][alive_]),
+                    -0.090*(population_[,"IHD_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_CHD
+    rm(dec_CHD) 
   }
   
   #Calculate QALYs
