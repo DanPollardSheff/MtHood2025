@@ -26,7 +26,7 @@
 ##'are alive
 ##'@param GlobalVars_ is the global parameters matrix
 ##'@return population_ is the revised population matrix
-calculate_QALYs <- function(population_, parameters_,  year_, alive_, GlobalVars_) {
+calculate_QALYs_default <- function(population_, parameters_,  year_, alive_, GlobalVars_) {
   #Calculate multiplier to adjust for a population with T2D without any complications
   
   #Declare mean BMI, age and proportion female from Hayes et al
@@ -418,3 +418,21 @@ calculate_QALYs_MtHood2025 <- function(population_,  year_, alive_, GlobalVars_)
   
   return(population_)
   }
+
+
+##'@param population_ is the population matrix
+##'@param parameters_ is a single row of the parameters matrix
+##'@param year_ model year
+##'@param alive_ is a vector of TRUEs and FALSEs to indicate whether or not people
+##'are alive
+##'@param GlobalVars_ is the global parameters matrix
+##'@return population_ is the revised population matrix
+calculate_QALYs <- function(population_, parameters_,  year_, alive_, GlobalVars_){
+  #If the option is selected use the Mt Hood utilties function
+  if(GlobalVars_["Mt Hood Utilities", "Value"]==T){
+  population_ <- calculate_QALYs_MtHood2025(population_,  year_, alive_, GlobalVars_)
+  }else{#Otherwise use the default utilities function
+  population_ <- calculate_QALYs_default(population_, parameters_,  year_, alive_, GlobalVars_)
+  }
+  return(population_)
+}
