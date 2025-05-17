@@ -1,5 +1,5 @@
-#    Mt Hood 2025 analyses using School for Public Health Research Diabetes Treatment Model version 3.1
-#    Copyright (C) 2025   Pollard, Brennan
+#    Embedding RCT Health Economic Analysis using the Sheffield Type 2 Diabetes Treatment Model - version 3
+#    Copyright (C) 2023  Pollard, Pidd, Breeze, Brennan, Thomas
 
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,24 +19,3 @@
 #    Address: Regent Court, 30 Regent Court, Sheffield, United Kingdom, S1 4DA
 
 
-library(MASS)
-library(VGAM)
-library(parallel)
-library(dplyr)
-set.seed(429)
-
-#Create the Global options matrix
-source("Global Options.R")
-#Load in population and data files
-source("all_model_files.R")
-
-################################################################################
-#Check if there is a folder called Results, and if not make it (it will be 
-#ignored by git version control and anything saved here will not be on Github)
-folder_check <- file.exists("Results")
-if(folder_check==F){
-  dir.create("Results")
-}
-################################################################################
-GlobalVars["Trajectory", "Value"] <- "Constant"
-population <- build_population_MtHood2025(100, F, PopulationVariables)

@@ -38,5 +38,39 @@ if(folder_check==F){
   dir.create("Results")
 }
 ################################################################################
+
+#Make population
+population <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), F, PopulationVariables)
+#Make the random numbers
+rands <- generate_random(length(population[,"ID"]))
+
+
+#Set options
 GlobalVars["Trajectory", "Value"] <- "Constant"
-population <- build_population_MtHood2025(100, F, PopulationVariables)
+GlobalVars["Results_output", "Value"] <- "Detailed"
+GlobalVars["run_psa", "Value"] <- F
+
+#Run it with constant values
+test_constant <- run_simulation(population,
+                                parameter, 
+                                9, 
+                                "Baseline", 
+                                GlobalVars,
+                                rands,
+                                LifeTables,
+                                1)
+test_constant
+
+#Go back to UKPDS 90
+GlobalVars["Trajectory", "Value"] <- "UKPDS90"
+
+#Run it with constant values
+UKPDS90 <- run_simulation(population,
+                                parameter, 
+                                9, 
+                                "Baseline", 
+                                GlobalVars,
+                                rands,
+                                LifeTables,
+                                1)
+UKPDS90

@@ -180,19 +180,14 @@ update_events_UKPDS82 <- function(population_, parameters_, treatment_, Year_, a
 #' @param random_numbs_ is an array of common random numbers giving the same random number
 #' @param Year_, is the current year in the simulation
 #' @param alive_, is a TRUE/FALSE vector indicating wether the patient is alive
+#' @param GlobalVars_ is the global options matrix, in this function it controls whether
+#' the UKPDS90 trajectory for eGFR is used
 
 #' @param Year_ is the current simulation year, this is used to record time of death
 
-update_events_UKPDS90 <- function(population_, parameters_, Year_, alive_,random_numbs_){
+update_events_UKPDS90 <- function(population_, parameters_, Year_, alive_,random_numbs_, GlobalVars_){
   #Update smoking status every 3 years (logistic regression on data collected three yearly)
-  if((Year_)%%3==0&Year_!=0){
-  p_SMO <- UKPDS_90_smo(population_,parameters_,alive_)
-  #Record smoking status
-  population_[,"SMO"][alive_] <- ifelse(random_numbs_[,"SMO",Year_+1][alive_]<p_SMO,1,0)
-  population_[,"p_SMO"][alive_] <- p_SMO
-  #remove temporary variables
-  rm(p_SMO)
-  }
+ 
   #Apply the time to event risk equations
   #Apply the yearly event micro/macroalbuminuria
   p_MMALB <- UKPDS_90_MICALB(population_, parameters_,alive_)
@@ -216,6 +211,11 @@ update_events_UKPDS90 <- function(population_, parameters_, Year_, alive_,random
   population_[,"PVD_E"][alive_] <- ifelse(random_numbs_[,"PVD",Year_+1][alive_]<p_PVD,1,0)
   population_[,"p_PVD"][alive_] <- p_PVD
   
+  ##do nothing if simple trajectories are used
+  if(GlobalVars_["Trajectory","Value"]=="Constant"){
+    #Do nothing
+  }else{ #if not, use the UKPDS90 eGFR updating
+  
   ###eGFR
   #eGFR is under 60
   p_eGFRu60 <- UKPDS_90_binrary_peGFRu60(population_, parameters_, alive_)
@@ -224,9 +224,22 @@ update_events_UKPDS90 <- function(population_, parameters_, Year_, alive_,random
   population_[,"eGFR"][alive_] <- UKPDS_90_eGFR(population_, parameters_,eGFRu60,alive_)
   population_[,"eGFR_U_60"][alive_] <- ifelse(population_[,"eGFR"][alive_]<60,population_[,"eGFR"][alive_],60)
   population_[,"eGFR_O_60"][alive_] <- ifelse(population_[,"eGFR"][alive_]>60,0,population_[,"eGFR"][alive_]-60)
+  #Remove eGFR temporary varialbes
+  rm(p_eGFRu60,eGFRu60)
   
-  #remove the temporary variables
-  rm(p_MMALB, p_ATFIB, p_PVD,p_eGFRu60,eGFRu60)
+  #Smoking
+  if((Year_)%%3==0&Year_!=0){
+    p_SMO <- UKPDS_90_smo(population_,parameters_,alive_)
+    #Record smoking status
+    population_[,"SMO"][alive_] <- ifelse(random_numbs_[,"SMO",Year_+1][alive_]<p_SMO,1,0)
+    population_[,"p_SMO"][alive_] <- p_SMO
+    #remove temporary variables
+    rm(p_SMO)
+  }
+  
+  }
+  #remove non eGFR temporary variables
+  rm(p_MMALB, p_ATFIB, p_PVD)
   
   return(population_)
 }

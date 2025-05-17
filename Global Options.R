@@ -22,7 +22,8 @@
 #List of the global variables
 glo_vars <- c("n","run_psa","psa_count", "disc_rate_costs", "disc_rate_QALYs", "disc_rate_LYs",
               "Population", "treatment", "Results_output", "KMmethod", "Number of cores",
-              "Treatment effect duration", "HbA1c Scenario", "Mt Hood Utilities", "Mt Hood Utility Values")
+              "Treatment effect duration", "HbA1c Scenario", "Mt Hood Utilities", "Mt Hood Utility Values",
+              "Trajectory")
 
 ##get the length of glo_vars, for checking below
 length(glo_vars)
@@ -107,3 +108,6 @@ GlobalVars["Mt Hood Utility Values", "Value"] <- "Mean"
 GlobalVars["Mt Hood Utility Values", "Description"] <- "This is a control varaible to determine 
 whether to when the Mt Hood utility function is used, which values to use Mean, 95% CI low or 95% CI high. The default is mispelt or unspecified is Mean"  
 
+GlobalVars["Trajectory", "Value"] <- "UKPDS90"
+GlobalVars["Trajectory", "Description"] <- "This is a control varaible to determine 
+whether to what trajectories are used, the options are Constant. The default is UKPDS90"

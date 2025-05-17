@@ -41,6 +41,22 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
   }else{
     parameters_ <- parameters_[SOUR_+1,]
   }
+  
+  #Use the correct trajectories
+  if(GlobalVars_["Trajectory","Value"]=="Constant"){
+  
+  ##Create the underlying trajectory matrices - for constant values
+  HBA1c_underlying  <- constant_A1c(population_,endtime_)
+  BMI_underlying    <- constant_BMI(population_,endtime_)
+  SBP_underlying    <- constant_SBP(population_,endtime_)
+  HDL_underlying    <- constant_HDL(population_,endtime_)
+  LDL_underlying    <- constant_LDL(population_,endtime_)
+  HEARTR_underlying <- constant_HEARTRATE(population_,endtime_)
+  WBC_underlying    <- constant_WBC(population_,endtime_)
+  HAEM_underlying   <- constant_HAEM(population_,endtime_)  
+  eGFR_underlying   <- constant_eGFR(population_, endtime_)
+    
+  }else{
   ##Create the underlying UKPDS trajectory matrices
   HBA1c_underlying  <- UKPDS_90_contrisk_A1c(population_,parameters_,endtime_)
   BMI_underlying    <- UKPDS_90_contrisk_BMI(population_,parameters_,endtime_)
@@ -51,6 +67,8 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
   WBC_underlying    <- UKPDS_90_WBC(population_,parameters_,endtime_)
   HAEM_underlying   <- UKPDS_90_HAEM(population_,parameters_,endtime_)
   
+  }
+  
   #Place to add Intervention effects
   attend_se         <- initialise_intervention_dt_attendse(length(population_[,"ID"]), treatment_, parameters_)
   HBA1c_INTV        <- initialise_intervention_dt_HbA1c(length(population_[,"ID"]),treatment_,parameters_,endtime_,GlobalVars_,attend_se)
@@ -58,8 +76,6 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
   SBP_INTV          <- initialise_intervention_dt_SBP(length(population_[,"ID"]),treatment_,parameters_,endtime_,GlobalVars_,attend_se)
   HDL_INTV          <- initialise_intervention_dt_HDL(length(population_[,"ID"]),treatment_,parameters_,endtime_,GlobalVars_,attend_se)
   LDL_INTV          <- initialise_intervention_dt_LDL(length(population_[,"ID"]),treatment_,parameters_,endtime_,GlobalVars_,attend_se)
-  
-  
   
   #start year at 0
   year <- 0
@@ -86,7 +102,7 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
   #Estimate Diabetes Related complications and all cause deaths for this year
   population_ <- update_events_UKPDS82(population_,parameters_, treatment_, year, alive, random_numbs_, LifeTables_)
   #Estimate PVD,ATFIB,MMALB
-  population_ <- update_events_UKPDS90(population_,parameters_, year, alive,random_numbs_)
+  population_ <- update_events_UKPDS90(population_,parameters_, year, alive,random_numbs_, GlobalVars_)
   #Estimate Depression
   population_ <- update_events_SPHR_depression(population_,parameters_,year,alive,random_numbs_)
   #Estimate Osteoarthritis
@@ -147,7 +163,9 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
                                 SBP_INTV,
                                 HDL_INTV,
                                 LDL_INTV,
-                                year)
+                                year,
+                                GlobalVars_,
+                                eGFR_underlying)
   
   population_ <- update_patchars(population_, parameters_, alive)
   

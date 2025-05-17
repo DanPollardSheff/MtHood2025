@@ -46,6 +46,9 @@
 #'@param LDL_INTV_ is any treatment related changes to LDL cholesterol for each 
 #'patient in each simulated year
 #'@param year_ is the current simulation year
+#'@param eGFR_underlying_ is an optional argument. This is the eGFR underlying trajectory
+#'when simple trajectories (e.g. fixed) are used
+#'@param GlobalVars_, is the global options matrix
 #'@return population_ is a revised population matrix
 
 update_history <- function(population_,
@@ -62,7 +65,10 @@ update_history <- function(population_,
                            SBP_INTV_,
                            HDL_INTV_,
                            LDL_INTV_,
-                           year_){
+                           year_,
+                           GlobalVars_,
+                           eGFR_underlying_){
+  
   #Update histories if there is an event
   population_[,"MI_H"] <- ifelse(population_[,"MI_E"]==1,1,population_[,"MI_H"])
   population_[,"MI2_H"] <- ifelse(population_[,"MI2_E"]==1,1,population_[,"MI2_H"])
@@ -127,7 +133,11 @@ update_history <- function(population_,
   population_[,"WBC"][alive] <- WBC_underlying_[,year_+3][alive]
   population_[,"HAEM"][alive] <- HAEM_underlying_[,year_+3][alive]
   
-  #update the binary varaibles
+  if(GlobalVars_["Trajectory", "Value"]=="Constant"){
+  population_[,"eGFR"][alive] <- eGFR_underlying_[,year_+3][alive]
+  }
+  
+  #update the binary variables
   population_[,"BMI_U_18_5"] <- ifelse(population_[,"BMI"]<18.5,1,0)
   population_[,"BMI_O_E_25"] <- ifelse(population_[,"BMI"]>=25,1,0)
   population_[,"LDL_O_35"] <- ifelse(population_[,"LDL"]>3.5, population_[,"LDL"],0)
