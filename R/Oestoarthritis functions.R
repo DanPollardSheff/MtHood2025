@@ -34,7 +34,7 @@ Oesto_SPHR <- function(population_,
   FV <- 
   parameters_[,"OST_mu"] + 
   parameters_[,"OST_bta_DXT2"]+
-  parameters_[,"OST_bta_BMI"]*population[,"BMI"][alive_]
+  parameters_[,"OST_bta_BMI"]*population_[,"BMI"][alive_]
   
   #Calculate probabilities
   pOST <- 1 - exp(-exp(FV))

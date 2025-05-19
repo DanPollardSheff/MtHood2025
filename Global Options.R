@@ -37,10 +37,10 @@ colnames(GlobalVars) <- c("Value", "Description")
 #drop the glo_vars variable
 rm(glo_vars)
 
-GlobalVars["n", "Value"] <- 5000
+GlobalVars["n", "Value"] <- 10000
 GlobalVars["n", "Description"] <- "The number of patients to run through the model"
 
-GlobalVars["run_psa", "Value"] <- T
+GlobalVars["run_psa", "Value"] <- F
 GlobalVars["run_psa", "Description"] <- "T = run psa, F = run deterministic"
 
 GlobalVars["psa_count", "Value"] <- 2000
@@ -52,13 +52,13 @@ if(is.numeric(GlobalVars["psa_count", "Value"])==T&GlobalVars["run_psa", "Value"
 }
 GlobalVars["psa_count", "Description"] <- "number of PSA runs. set to NA for deterministic runs"
 
-GlobalVars["disc_rate_costs", "Value"] <- 0.035
+GlobalVars["disc_rate_costs", "Value"] <- 0
 GlobalVars["disc_rate_costs", "Description"] <- "discount rate for costs, writen as a numeric number"
 
-GlobalVars["disc_rate_QALYs", "Value"] <- 0.035
+GlobalVars["disc_rate_QALYs", "Value"] <- 0
 GlobalVars["disc_rate_QALYs", "Description"] <- "discount rate for QALYs, writen as a numeric number"
 
-GlobalVars["disc_rate_LYs", "Value"] <- 0.035
+GlobalVars["disc_rate_LYs", "Value"] <- 0
 GlobalVars["disc_rate_LYs", "Description"] <- "discount rate for QALYs, writen as a numeric number"
 
 GlobalVars["treatment", "Value"] <- "baseline"
@@ -66,7 +66,7 @@ GlobalVars["treatment", "Description"] <- "text term for the treatment. Cross re
 in your code for creating an interventions effect matrix (should be in R/Interventions.R)"
 
 
-GlobalVars["Results_output", "Value"] <- "Summary"
+GlobalVars["Results_output", "Value"] <- "Patient Level"
 GlobalVars["Results_output", "Description"] <- "text term to produce different output types. Default is summary for PSA,
 set to Patient Level to get the patient matrix. If not specfied, the determinisitc model will return a detailed year by year summary"
 
@@ -108,6 +108,6 @@ GlobalVars["Mt Hood Utility Values", "Value"] <- "Mean"
 GlobalVars["Mt Hood Utility Values", "Description"] <- "This is a control varaible to determine 
 whether to when the Mt Hood utility function is used, which values to use Mean, 95% CI low or 95% CI high. The default is mispelt or unspecified is Mean"  
 
-GlobalVars["Trajectory", "Value"] <- "UKPDS90"
+GlobalVars["Trajectory", "Value"] <- "Constant"
 GlobalVars["Trajectory", "Description"] <- "This is a control varaible to determine 
 whether to what trajectories are used, the options are Constant. The default is UKPDS90"
