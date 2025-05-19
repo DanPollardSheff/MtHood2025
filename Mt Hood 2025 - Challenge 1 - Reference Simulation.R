@@ -60,22 +60,14 @@ if(folder_check==F){
 }
 ################################################################################
 
-#Change the Global options to have the right values
-#I want the patient level results - i.e. their values at the time of their death
-GlobalVars["Results_output", "Value"] <- "Patient Level"
-#Do this in 10,000 person groups to assess satbility
-GlobalVars["n", "Value"] <- 10000
-
-##Assess Stability
-###Make 50,000 men to assess stability 
-###Target: Incremental QALYs of all interventions v control
+##Model run - Men
 set.seed(123)
-popM1  <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), F, PopulationVariables)
-rands <- generate_random(length(popM1[,"ID"]))
+popM  <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), F, PopulationVariables)
+rands <- generate_random(length(popM[,"ID"]))
 
 
 
-control <- run_simulation(popM1,
+controlM <- run_simulation(popM,
                           parameter, 
                           40, 
                           "Baseline", 
@@ -83,11 +75,56 @@ control <- run_simulation(popM1,
                           rands,
                           LifeTables,
                           1)
+write.csv(controlM, "Results/MtHoodReferenceSimulation, no intv, Male.csv")
 
-set.seed(123)
+A1cINTVM <- run_simulation(popM,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_A1c", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(A1cINTVM, "Results/MtHoodReferenceSimulation, A1c only, Male.csv")
 
 
-allINTV <- run_simulation(popM1,
+BMIINTVM <- run_simulation(popM,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_BMI", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(BMIINTVM, "Results/MtHoodReferenceSimulation, BMI only, Male.csv")
+
+
+SBPINTVM <- run_simulation(popM,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_SBP", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(SBPINTVM, "Results/MtHoodReferenceSimulation, SBP only, Male.csv")
+
+LDLINTVM <- run_simulation(popM,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_LDL", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(LDLINTVM, "Results/MtHoodReferenceSimulation, LDL only, Male.csv")
+
+
+allINTVM <- run_simulation(popM,
                           parameter, 
                           40, 
                           "Mt_HOOD_RS_ALL", 
@@ -96,16 +133,14 @@ allINTV <- run_simulation(popM1,
                           LifeTables,
                           1)
 
+write.csv(allINTVM, "Results/MtHoodReferenceSimulation, all interventions, Male.csv")
 
-control <- control[,c("ID","QALY")]
-allINTV <- allINTV[,c("ID", "QALY")]
 
-#2nd set of 10,000
-set.seed(63166)
-popM2  <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), F, PopulationVariables)
-rands <- generate_random(length(popM1[,"ID"]))
+#Women
+popF  <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), T, PopulationVariables)
 
-control2 <- run_simulation(popM2,
+
+controlF <- run_simulation(popF,
                           parameter, 
                           40, 
                           "Baseline", 
@@ -114,7 +149,58 @@ control2 <- run_simulation(popM2,
                           LifeTables,
                           1)
 
-allINTV2 <- run_simulation(popM2,
+write.csv(controlF, "Results/MtHoodReferenceSimulation, no intv, Female.csv")
+
+
+A1cINTVF <- run_simulation(popF,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_A1c", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(A1cINTVF, "Results/MtHoodReferenceSimulation, A1c only, Female.csv")
+
+
+BMIINTVF <- run_simulation(popF,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_BMI", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(BMIINTVF, "Results/MtHoodReferenceSimulation, BMI only, Female.csv")
+
+
+SBPINTVF <- run_simulation(popF,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_SBP", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(SBPINTVF, "Results/MtHoodReferenceSimulation, SBP only, Female.csv")
+
+
+LDLINTVF <- run_simulation(popF,
+                          parameter, 
+                          40, 
+                          "Mt_HOOD_RS_LDL", 
+                          GlobalVars,
+                          rands,
+                          LifeTables,
+                          1)
+
+write.csv(LDLINTVF, "Results/MtHoodReferenceSimulation, LDL only, Female.csv")
+
+
+allINTVF <- run_simulation(popF,
                           parameter, 
                           40, 
                           "Mt_HOOD_RS_ALL", 
@@ -123,53 +209,5 @@ allINTV2 <- run_simulation(popM2,
                           LifeTables,
                           1)
 
+write.csv(allINTVF, "Results/MtHoodReferenceSimulation, all interventions, Female.csv")
 
-control2 <- control2[,c("ID","QALY")]
-allINTV2 <- allINTV2[,c("ID", "QALY")]
-
-control <- rbind(control,control2)
-allINTV <- rbind(allINTV,allINTV2)
-
-set.seed(617)
-popM3  <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), F, PopulationVariables)
-rands <- generate_random(length(popM1[,"ID"]))
-
-control3 <- run_simulation(popM3,
-                           parameter, 
-                           40, 
-                           "Baseline", 
-                           GlobalVars,
-                           rands,
-                           LifeTables,
-                           1)
-
-allINTV3 <- run_simulation(popM3,
-                           parameter, 
-                           40, 
-                           "Mt_HOOD_RS_ALL", 
-                           GlobalVars,
-                           rands,
-                           LifeTables,
-                           1)
-
-
-control3 <- control3[,c("ID","QALY")]
-allINTV3 <- allINTV3[,c("ID", "QALY")]
-
-control <- rbind(control,control3)
-allINTV <- rbind(allINTV,allINTV3)
-
-
-incremental <- control
-incremental[,"QALY"] <- allINTV[,"QALY"] - control[,"QALY"]
-incremental[,"ID"] <- 1:length(incremental[,"ID"]) #reset the ID variable, so that each person has a unique ID, e.g. 1st patient in simulation 2, is now 10001 not 1. 
-running_mean_QALYs <- cumsum(incremental[,"QALY"])/seq_along(incremental[,"QALY"])
-incremental <- cbind(incremental,running_mean_QALYs)
-
-ggplot(incremental,
-       aes(x=ID,
-           y=running_mean_QALYs))+
-  geom_line()+
-  ylim(0.6,0.65)
-
-##Looks stable at ~10k onwards. Run with 20k

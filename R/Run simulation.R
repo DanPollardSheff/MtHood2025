@@ -70,7 +70,7 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
   }
   
   #Place to add Intervention effects
-  attend_se <- matrix(data = 0, nrow = length(population_[,"ID"]), ncol = 3 ) # not embedding, haven't yet editted costs, so just set attend_se to 0
+  attend_se <- matrix(data = 0, nrow = length(population_[,"ID"]), ncol = 3 ) # not embedding, haven't yet edited costs, so just set attend_se to 0
   attend_se[,1] <- 1:length(population_[,"ID"]) #change the first column to a row ID
   HBA1c_INTV        <- initialise_intervention_dt_HbA1c(length(population_[,"ID"]),treatment_,parameters_,endtime_,GlobalVars_,attend_se)
   BMI_INTV          <- initialise_intervention_dt_BMI(length(population_[,"ID"]),treatment_,parameters_,endtime_,GlobalVars_,attend_se)

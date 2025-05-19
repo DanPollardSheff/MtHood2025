@@ -23,7 +23,7 @@
 
 #' @param GlobalVar_, this the global options matrix
 #' @return results, this is the results template
-#' 
+
 
 
 GenerateResultsMatrix <- function(GlobalVar_, endtime_){

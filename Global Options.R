@@ -66,7 +66,7 @@ GlobalVars["treatment", "Description"] <- "text term for the treatment. Cross re
 in your code for creating an interventions effect matrix (should be in R/Interventions.R)"
 
 
-GlobalVars["Results_output", "Value"] <- "Patient Level"
+GlobalVars["Results_output", "Value"] <- ""
 GlobalVars["Results_output", "Description"] <- "text term to produce different output types. Default is summary for PSA,
 set to Patient Level to get the patient matrix. If not specfied, the determinisitc model will return a detailed year by year summary"
 
