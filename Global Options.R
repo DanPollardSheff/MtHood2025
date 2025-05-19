@@ -37,7 +37,7 @@ colnames(GlobalVars) <- c("Value", "Description")
 #drop the glo_vars variable
 rm(glo_vars)
 
-GlobalVars["n", "Value"] <- 10000
+GlobalVars["n", "Value"] <- 20000
 GlobalVars["n", "Description"] <- "The number of patients to run through the model"
 
 GlobalVars["run_psa", "Value"] <- F
@@ -99,7 +99,7 @@ so if none of these options are correctly specified the model will default to
 this value"
 
 
-GlobalVars["Mt Hood Utilities", "Value"] <- "TRUE"
+GlobalVars["Mt Hood Utilities", "Value"] <- "T"
 GlobalVars["Mt Hood Utilities", "Description"] <- "This is a control varaible to determine 
 whether to use the Mt Hood Utility function, or the default utility function. This takes a value of TRUE to use the Mt Hood Uility function and anything else
 means the default utility method will be used"
