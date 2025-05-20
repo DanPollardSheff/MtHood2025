@@ -203,3 +203,149 @@ update_patchars <- function(population_,parameters_,alive_){
   
   return(population_)
 }
+
+#'@param population_ is the population matrix
+#'@param HBA1c_underlying_ is the underling trajectory of HbA1C for each patient
+#'@param BMI_underlying_ is the underling trajectory of BMI for each patient
+#'@param SBP_underlying_ is the underling trajectory of systolic blood pressure 
+#'for each patient
+#'@param HDL_underlying_ is the underlying trajectory of HDL cholesterol for each 
+#'patient
+#'@param LDL_underlying_ is the underlying trajectory of LDL cholesterol for each
+#'patient 
+#'@param HEARTR_underlying_ is the underlying trajectory of heart rate for each
+#'patient
+#'@param WBC_underlying_ is the underlying trajectory of white blood cell count
+#'for each patient
+#'@param HAEM_underlying_ is the underlying trajectory of haemoglobin for each 
+#'patient
+#'@param HbA1c_INTV_ is any treatment related changes to HbA1c for each patient
+#'in each simulated year
+#'@param BMI_INTV_ is any treatment related changes to HbA1c for each patient
+#'in each simulated year
+#'@param SBP_INTV_ is any treatment related changes to systolic blood pressure 
+#'for each patient in each simulated year
+#'@param HDL_INTV_ is any treatment related changes to HDL cholesterol for each 
+#'patient in each simulated year
+#'@param LDL_INTV_ is any treatment related changes to LDL cholesterol for each 
+#'patient in each simulated year
+#'@param year_ is the current simulation year
+#'@param eGFR_underlying_ is an optional argument. This is the eGFR underlying trajectory
+#'when simple trajectories (e.g. fixed) are used
+#'@param GlobalVars_, is the global options matrix
+#'@return population_ is a revised population matrix
+
+
+update_history_MtHood2025C2 <- function(population_,
+                                        alive_,
+                                        A1c_,
+                                        BMI_,
+                                        SBP_,
+                                        SMO_,       
+                                        HDL_,
+                                        LDL_,       
+                                        ATF_,
+                                        MMALB_,
+                                        HEAM_,
+                                        WBC_,
+                                        HR_,
+                                        PVD_,
+                                        treatment_,
+                                        year_,
+                                        GlobalVars_){
+  
+  #Update histories if there is an event
+  population_[,"MI_H"] <- ifelse(population_[,"MI_E"]==1,1,population_[,"MI_H"])
+  population_[,"MI2_H"] <- ifelse(population_[,"MI2_E"]==1,1,population_[,"MI2_H"])
+  population_[,"AMP_H"] <- ifelse(population_[,"AMP_E"]==1,1,population_[,"AMP_H"])
+  population_[,"AMP2_H"] <- ifelse(population_[,"AMP2_E"]==1,1,population_[,"AMP2_H"])
+  population_[,"BLIND_H"] <- ifelse(population_[,"BLIND_E"]==1,1,population_[,"BLIND_H"])
+  population_[,"ULCER_H"] <- ifelse(population_[,"ULCER_E"]==1,1,population_[,"ULCER_H"])
+  population_[,"RENAL_H"] <- ifelse(population_[,"RENAL_E"]==1,1,population_[,"RENAL_H"])
+  population_[,"CHF_H"] <- ifelse(population_[,"CHF_E"]==1,1,population_[,"CHF_H"] )
+  population_[,"IHD_H"] <- ifelse(population_[,"IHD_E"]==1,1,population_[,"IHD_H"])
+  population_[,"STRO_H"] <- ifelse(population_[,"STRO_E"]==1,1,population_[,"STRO_H"])
+  population_[,"STRO2_H"] <- ifelse(population_[,"STRO2_E"]==1,1,population_[,"STRO2_H"])
+  population_[,"PVD_H"] <- ifelse(population_[,"PVD_E"]==1,1,population_[,"PVD_H"])
+  population_[,"MMALB_H"] <- ifelse(population_[,"MMALB_E"]==1,1,population_[,"MMALB_H"])
+  population_[,"ATFIB_H"] <- ifelse(population_[,"ATFIB_E"]==1,1,population_[,"ATFIB_H"])
+  population_[,"CANB_H"] <- ifelse(population_[,"CANB_E"]==1,1,population_[,"CANB_H"])
+  population_[,"CANC_H"] <- ifelse(population_[,"CANC_E"]==1,1,population_[,"CANC_H"])
+  population_[,"DEP_H"] <- ifelse(population_[,"DEP_E"]==1,1,population_[,"DEP_H"])
+  population_[,"OST_H"] <- ifelse(population_[,"OST_E"]==1,1,population_[,"OST_H"])
+  
+  #Set all events back to 0
+  population_[,"MI_E"] <- 0
+  population_[,"MI2_E"] <- 0
+  population_[,"AMP_E"] <- 0
+  population_[,"AMP2_E"] <- 0
+  population_[,"BLIND_E"] <- 0
+  population_[,"ULCER_E"] <- 0
+  population_[,"RENAL_E"] <- 0
+  population_[,"CHF_E"] <- 0
+  population_[,"IHD_E"] <- 0
+  population_[,"STRO_E"] <- 0
+  population_[,"STRO2_E"] <- 0
+  population_[,"PVD_E"] <- 0
+  population_[,"MMALB_E"] <- 0
+  population_[,"ATFIB_E"] <- 0
+  population_[,"CANB_E"] <- 0
+  population_[,"CANC_E"] <- 0
+  population_[,"DEP_E"] <- 0
+  population_[,"OST_E"] <- 0
+  
+  #Reset this years costs and QALYs back to 0
+  population_[,"EQ5D"] <- 0
+  population_[, "YearCOST"] <- 0
+  
+  #work out who survived this year
+  alive <- is.na(population_[,"F_ALLCAUSE"])
+  
+  #update the risk factors for people who are alive
+  #Continous risk factors
+  population_[,"HBA"][alive_]       <- A1c_[,(year_+3)][alive_]
+  population_[,"BMI"][alive_]       <- BMI_[,(year_+3)][alive_]
+  population_[,"SBP"][alive_]       <- SBP_[,(year_+3)][alive_]
+  population_[,"SMO"][alive_]       <- SMO_[,(year_+3)][alive_]
+  population_[,"HDL"][alive_]       <- HDL_[,(year_+3)][alive_]
+  population_[,"LDL"][alive_]       <- LDL_[,(year_+3)][alive_]
+  population_[,"HAEM"][alive_]      <- HEAM_[,(year_+3)][alive_]
+  population_[,"WBC"][alive_]       <- WBC_[,(year_+3)][alive_]
+  population_[,"HEART_R"][alive_]   <- HR_[,(year_+3)][alive_]
+  
+  #Binary risk factors
+  #Record a new event if someone is recorded as Y in the datasets and they have
+  #no history of the same event
+  population_[,"MMALB_E"][alive_]     <- ifelse(population_[,"MMALB_H"][alive_]==0&
+                                                MMALB_[,(year_+3)][alive_]=="Y",
+                                                1,
+                                                0)
+  population_[,"PVD_E"][alive_]       <- ifelse(population_[,"PVD_H"][alive_]==0&
+                                                PVD_[,(year_+3)][alive_]=="Y",
+                                                1,
+                                                0)
+  population_[,"ATFIB_E"][alive_]     <- ifelse(population_[,"ATFIB_H"][alive_]==0&
+                                                ATF_[,(year_+3)][alive_]=="Y",
+                                                1,
+                                                0)
+  #For smoking just update the risk factor
+  population_[,"SMO"][alive_]         <- ifelse(SMO_[,(year_+3)][alive_]=="Y",
+                                                1,
+                                                0)
+  
+    
+  
+  #update the binary variables
+  population_[,"BMI_U_18_5"] <- ifelse(population_[,"BMI"]<18.5,1,0)
+  population_[,"BMI_O_E_25"] <- ifelse(population_[,"BMI"]>=25,1,0)
+  population_[,"LDL_O_35"] <- ifelse(population_[,"LDL"]>3.5, population_[,"LDL"],0)
+  
+  
+  
+  #remove unnecessary variables
+  rm(alive)
+  
+  
+  #produce the population matrix
+  return(population_)
+}

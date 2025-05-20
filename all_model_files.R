@@ -32,3 +32,10 @@ LifeTables <- as.matrix(read.csv("data/LifeTables.csv"))
 LifeTables[,"AGE"] <- as.numeric(LifeTables[,"AGE"] )
 LifeTables[,"FEMALE"] <- as.numeric(LifeTables[,"FEMALE"])
 
+##Mt Hood 2025 Challenge 2, load everything in the data MtHood2025 challenge2 into the Global Envrioment as 1 list
+#Get the names of all files for Mt Hood 2025 Challenge 2
+allfiles <- list.files(path = "data MtHood2025 challenge2/", pattern = "\\.csv$", full.names=TRUE)
+#Read all files into the global enviroment, making them a list
+MtHood2025C2Data <- lapply(allfiles, read.csv)
+#Make each object in the list have the same name as the .csv file
+names(MtHood2025C2Data) <- basename(allfiles)

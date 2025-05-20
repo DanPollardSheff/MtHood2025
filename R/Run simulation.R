@@ -238,3 +238,283 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
   return(results)
   }
 }
+
+
+
+####'This function runs the model for a given set of patients and parameters
+####'it is designed for the Mt Hood Diabetes Challenge 2025, Challenge 2 as this 
+####'function uses predefined life paths for simulated inidividual's trajectories
+####'@param population_, is the population matrix
+####'@param parameters_, is the full parameters matrix
+####'@param endtime_, is the number of years to run the simulation for
+####'@param GlobalVars_, is the matrix giving the global variables
+####'@param random_numbs_, is an array of common random numbers giving a random number
+####'@param LifeTables_, is a dataframe containing life table information in formate
+####'that can easily be matched to the population matrix
+####'@param SOUR_, is the current second order uncertainty run
+####'draw for each patient in each year for every event in which a random number 
+####'is required 
+####'@param MtHood2025C2_ is a list of baseline characteristics and risk factor trajectories
+####'for the Mt Hood 2025 challenge 2
+####'@return results, is the results matrix
+####'@return psaresults, is a summary set of results to produce in the PSA
+
+run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, treatment_, GlobalVars_, random_numbs_,LifeTables_, SOUR_,MtHood2025C2_){
+  
+  ##reduce the parameters matrix down to the correct row
+  if(GlobalVars_["run_psa","Value"]==F){
+    parameters_ <- parameters_[1,]
+  }else{
+    parameters_ <- parameters_[SOUR_+1,]
+  }
+  
+  ##Get the right data frames for risk factor / event progression by treatment
+  #HbA1c, BMI, SBP
+  if(treatment_=="BC_Control"|treatment_=="BC_INTV"){ # If running intervention or control for the basecase, load the basecase A1c trajectory
+            A1c <- MtHood2025C2_$A1cBC.csv
+            BMI <- MtHood2025C2_$BMIBC.csv
+            SBP <- MtHood2025C2_$SBPBC.csv
+  }else if (treatment_=="S1_Control"|treatment_=="S1_INTV"){ # If running intervention or control for the Scenario 1, load the Scenario 1 A1c trajectory
+            A1c <- MtHood2025C2_$A1cS1.csv
+            BMI <- MtHood2025C2_$BMIS1.csv
+            SBP <- MtHood2025C2_$SBPS1.csv
+            
+  }else if (treatment_=="S2_Control"|treatment_=="S2_INTV"){ # If running intervention or control for the Scenario 2, load the Scenario 2 A1c trajectory
+            A1c <- MtHood2025C2_$A1cS2.csv
+            BMI <- MtHood2025C2_$BMIS2.csv
+            SBP <- MtHood2025C2_$SBPS2.csv
+            
+  }else {
+            A1c <- MtHood2025C2_$A1cNoEffect.csv #Otherwise load the no effect A1c trajectories
+            BMI <- MtHood2025C2_$BMINoEffect.csv
+            SBP <- MtHood2025C2_$SBPNoEffect.csv
+            
+            
+  }
+  #Extract the other risk factors that do not depend on treatment arm for progression
+  SMO         <- MtHood2025C2_$Smoking.csv
+  HDL         <- MtHood2025C2_$HDL.csv
+  LDL         <- MtHood2025C2_$LDL.csv
+  PVD         <- MtHood2025C2_$PVD.csv
+  ATF         <- MtHood2025C2_$AF.csv
+  MMALB       <- MtHood2025C2_$MMALB.csv
+  eGFR        <- MtHood2025C2_$eGFR.csv
+  HEAM        <- MtHood2025C2_$HEAM.csv
+  WBC         <- MtHood2025C2_$WBC.csv
+  HR          <- MtHood2025C2_$HR.csv
+  PVD         <- MtHood2025C2_$PVD.csv
+  
+  #If control we only want group 1 people, if intervention, we want group 2 and to change their ID to start at 1 again
+  if(treatment_=="BC_Control"|treatment_=="S1_Control"|treatment_=="S2_Control"|treatment_=="NoEffect_Control"){
+    A1c       <- subset(A1c,Group==1)
+    BMI       <- subset(BMI,Group==1)
+    SBP       <- subset(SBP,Group==1)
+    SMO       <- subset(SMO,Group==1)
+    HDL       <- subset(HDL,Group==1)
+    LDL       <- subset(LDL,Group==1)
+    ATF       <- subset(ATF,Group==1)
+    MMALB     <- subset(MMALB,Group==1)
+    HEAM      <- subset(HEAM,Group==1)
+    WBC       <- subset(WBC,Group==1)
+    HR        <- subset(HR,Group==1)
+    PVD       <- subset(PVD,Group==1)
+  }else{
+    A1c       <- subset(A1c,Group==2)
+    BMI       <- subset(BMI,Group==2)
+    SBP       <- subset(SBP,Group==2)
+    SMO       <- subset(SMO,Group==2)
+    HDL       <- subset(HDL,Group==2)
+    LDL       <- subset(LDL,Group==2)
+    ATF       <- subset(ATF,Group==2)
+    MMALB     <- subset(MMALB,Group==2)
+    HEAM      <- subset(HEAM,Group==2)
+    WBC       <- subset(WBC,Group==2)
+    HR        <- subset(HR,Group==2)
+    PVD       <- subset(PVD,Group==2)
+    
+    #Change ID's back to 1 to 1000
+    A1c$ID    <- 1:1000
+    BMI$ID    <- 1:1000
+    SBP$ID    <- 1:1000
+    SMO$ID    <- 1:1000
+    HDL$ID    <- 1:1000
+    LDL$ID    <- 1:1000
+    ATF$ID    <- 1:1000
+    MMALB$ID  <- 1:1000
+    HEAM$ID   <- 1:1000
+    WBC$ID    <- 1:1000
+    HR$ID     <- 1:1000
+    PVD$ID    <- 1:1000
+  }
+  
+  
+  #start year at 0
+  year <- 0
+  
+  #initialise the results matrix
+  results <- GenerateResultsMatrix(GlobalVars_, endtime_)
+  #initialise a PSA results matrix, if it is a PSA
+  if(GlobalVars_["run_psa","Value"]==T){
+    psaresults <- matrix(data=NA, nrow = as.numeric(GlobalVars_["psa_count", "Value"]), ncol = 5)  
+    colnames(psaresults) <- c("Life Years per Patient", "Undiscounted QALYs per Patient", 
+                              "QALYs per Patient", "Undiscounted Costs per Patient",
+                              "Discounted Costs per Patient")
+  }
+  
+  #run the model up to the specified end time or so long as at least one person is alive
+  while (year < endtime_ & 
+         (sum(is.na(population_[,"F_ALLCAUSE"]))) >= 1){
+    #Get a logical vector indicating if people are alive, use the fact that FOTH
+    #in the population matrix is NA if alive
+    alive <- is.na(population_[,"F_ALLCAUSE"])
+    #create matrix of ture = dead too for unit tests
+    dead <- is.na(population_[,"F_ALLCAUSE"])==F
+    
+    #Estimate Diabetes Related complications and all cause deaths for this year
+    population_ <- update_events_UKPDS82(population_,parameters_, treatment_, year, alive, random_numbs_, LifeTables_)
+    #Estimate Depression
+    population_ <- update_events_SPHR_depression(population_,parameters_,year,alive,random_numbs_)
+    #Estimate Osteoarthritis
+    population_ <- update_events_SPHR_osteoarthritis(population_,parameters_,year,alive,random_numbs_)
+    #Estimate Cancer incidence
+    population_ <- update_events_SPHR_cancer(population_, parameters_,year, alive,random_numbs_)
+    
+    #Stop the model if dead people have events
+    if(sum(population_[,"MI_E"][dead])  !=0|
+       sum(population_[,"MI2_E"][dead]) != 0|
+       sum(population_[,"AMP_E"][dead]) != 0| 
+       sum(population_[,"AMP2_E"][dead]) != 0|
+       sum(population_[,"BLIND_E"][dead]) != 0|
+       sum(population_[,"ULCER_E"][dead]) != 0|
+       sum(population_[,"RENAL_E"][dead]) != 0|
+       sum(population_[,"CHF_E"][dead]) != 0|
+       sum(population_[,"IHD_E"][dead]) != 0|
+       sum(population_[,"STRO_E"][dead]) != 0|
+       sum(population_[,"STRO2_E"][dead]) != 0|
+       sum(population_[,"ATFIB_E"][dead]) != 0|
+       sum(population_[,"PVD_E"][dead]) != 0|
+       sum(population_[,"MMALB_E"][dead]) != 0|
+       sum(population_[,"CANB_E"][dead]) != 0|
+       sum(population_[,"CANC_E"][dead]) != 0|
+       sum(population_[,"DEP_E"][dead]) != 0|
+       sum(population_[,"OST_E"][dead]) != 0){
+      #stop the model if the number of people with dead people are recorded as
+      #having an event
+      #push everything to the global enviroment for bug checking
+      for (variable in ls()) {
+        assign(variable, get(variable), envir = .GlobalEnv)
+      }
+      
+      stop("dead people are getting events")
+    }
+    
+    ##QALYs
+    population_ <- calculate_QALYs(population_, parameters_,  year, alive, GlobalVars_)
+    ##Costs
+    population_ <- calculate_costs(population_, parameters_, year, alive, GlobalVars_,treatment_,attend_se)
+    
+    #Record results
+    results <- GenerateDetailedresults(results,population_, year, alive, GlobalVars_)
+    
+    
+    #update histories
+    population_ <- update_history_MtHood2025C2(population_,
+                                               alive,
+                                               A1c,
+                                               BMI,
+                                               SBP,
+                                               SMO,       
+                                               HDL,
+                                               LDL,       
+                                               ATF,
+                                               MMALB,
+                                               HEAM,
+                                               WBC,
+                                               HR,
+                                               PVD,
+                                               treatment_,
+                                               year,
+                                               GlobalVars_)
+    
+    population_ <- update_patchars(population_, parameters_, alive)
+    
+    #Unit test
+    #Stop the model if there are events still in the population matrix
+    if(sum(population_[,"MI_E"])  !=0|
+       sum(population_[,"MI2_E"]) != 0|
+       sum(population_[,"AMP_E"]) != 0| 
+       sum(population_[,"AMP2_E"]) != 0|
+       sum(population_[,"BLIND_E"]) != 0|
+       sum(population_[,"ULCER_E"]) != 0|
+       sum(population_[,"RENAL_E"]) != 0|
+       sum(population_[,"CHF_E"]) != 0|
+       sum(population_[,"IHD_E"]) != 0|
+       sum(population_[,"STRO_E"]) != 0|
+       sum(population_[,"STRO2_E"]) != 0){
+      
+      #push everything to the global enviroment for bug checking
+      for (variable in ls()) {
+        assign(variable, get(variable), envir = .GlobalEnv)
+      }
+      #stop the model if the events are not reset to 0
+      stop("events are not set to zero before reset")
+    }
+    
+    #In years 3 and 4, record Life Years, QALYs and Costs for the challenge
+    #Also, collect these data for everyone, not just the dead people
+    if(year ==3){
+      population_[,"LY_Y3"]   <- population_[,"YearsLived"]
+      population_[,"QALY_Y3"] <- population_[,"QALY"]
+      population_[,"Cost_Y3"] <- population_[,"COST"]
+    }else if (year == 4){
+      population_[,"LY_Y4"]   <- population_[,"YearsLived"]
+      population_[,"QALY_Y4"] <- population_[,"QALY"]
+      population_[,"Cost_Y4"] <- population_[,"COST"]
+    }
+    
+    year <- year + 1
+    
+  }
+  
+  
+  #For now return the Detailed results table or the population matrix if the run is deterministic
+  if(GlobalVars_["Results_output", "Value"] == "Summary"&
+     GlobalVars_["run_psa", "Value"]==T){
+    psaresults <- matrix(data=NA,nrow=1,ncol=24)
+    #Life Years
+    psaresults[,1] <- sum(results["Undiscounted life years accrued",],na.rm=TRUE)/length(population_[,"ID"])
+    psaresults[,2] <- sum(results["Discounted life years accrued",],na.rm=TRUE)/length(population_[,"ID"])
+    psaresults[,3] <- sum(results["Undiscounted QALYs",],na.rm=TRUE)/length(population_[,"ID"])
+    psaresults[,4] <- sum(results["Discounted QALYs",],na.rm=TRUE)/length(population_[,"ID"])
+    psaresults[,5] <- sum(results["Undiscounted Costs",],na.rm=TRUE)/length(population_[,"ID"])
+    psaresults[,6] <- sum(results["Discounted Costs",],na.rm=TRUE)/length(population_[,"ID"])
+    #10 year histories
+    psaresults[,7] <- results["1st MI Hist",11]
+    psaresults[,8] <- results["2nd MI Hist",11]
+    psaresults[,9] <- results["1st Stroke Hist",11]
+    psaresults[,10] <- results["2nd Stroke Hist",11]
+    psaresults[,11] <- results["CHF Hist",11]
+    psaresults[,12] <- results["IHD Hist",11]
+    psaresults[,13] <- results["Blindness Hist",11]
+    psaresults[,14] <- results["Ulcer Hist",11]
+    psaresults[,15] <- results["1st Amputation Hist",11]
+    psaresults[,16] <- results["2nd Amputation Hist",11]
+    psaresults[,17] <- results["Renal Failure Hist",11]
+    psaresults[,18] <- results["PVD Hist",11]
+    psaresults[,19] <- results["MMALB Hist",11]
+    psaresults[,20] <- results["ATFIB Hist",11]
+    psaresults[,21] <- results["Breast Cancer Hist",11]
+    psaresults[,22] <- results["Colorectal Cancer Hist",11]
+    psaresults[,23] <- results["Depression Hist",11]
+    psaresults[,24] <- results["Osteoarthritis Hist",11]
+    #delete the original results matrix
+    rm(results)
+    return(psaresults)
+  }else if(GlobalVars_["Results_output","Value"]=="Patient Level"&
+           GlobalVars_["run_psa","Value"]==F){#option to produce the patient 
+    #charateristics matrix for checking results stability for number of patients
+    return(population_)
+  }else{#default is the 
+    return(results)
+  }
+}

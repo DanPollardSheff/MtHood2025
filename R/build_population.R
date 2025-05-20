@@ -262,5 +262,158 @@ build_population_MtHood2025 <- function(n_, Female_, PopulationVariables_) {
   return(population)
 }
 
+#' @param data_ is a list containing all baseline characteristcs and risk factor time paths
+#' for Mt Hoot Diabetes Challenge, Challenge 2
+#' @param treatment_ is a text varaible determining the treatment - this shouldn't 
+#' be necessary as the bl characteristics should be the same
+#' @param PopulationVariables_ is a list of all varaibles required in the microsimulation
+#' and their meaning (although the meaning is not used in the code)
+#' @return Population is the baseline characteristics of the population to use in the microsimulation
 
+build_population_MtHood2025_C2 <- function(data_, treatment_, PopulationVariables_) {
+  
+  #extract only the baseline characteristics
+  bldata <- data_[["BaselineCharacteristics.csv"]]
+  #subset by Group
+  if (treatment_=="Control"){
+    bldata <- subset(bldata, Group==1)
+  }else{
+    bldata <- subset(bldata, Group==2)
+  }
+  #Remove Group, as it is no longer needed
+  bldata <- bldata[,!(names(bldata)%in%"Group")]
+    
+  #limit the raw population characteristics to be the same as the number se
+  #in the global varaibles
+  
+  year <- 0
+  population <- matrix(0, nrow = length(bldata[,"ID"]), ncol = length(PopulationVariables_[,"Variable"]))
+  colnames(population) <- PopulationVariables_[,"Variable"]
+  population[, "ID"] <- 1:length(bldata[,"ID"])
+  population[, "CONS"] <- 1
+  population[, "T"] <- 0
+  population[, "AGE_0"] <- floor(bldata$Age.now)
+  population[, "MALE"] <- ifelse(bldata$Gender=="M",0,1)
+  population[, "FEMALE"] <- ifelse(bldata$Gender=="F",1,0)
+  
+  #Read in a dummy variable for Afro-caribean descent (1= afro-caribean, 0=otherwise)
+  population[, "AFRO"] <- ifelse(bldata$Ethnicity==2,1,0)  
+  population[,"INDIAN"] <- ifelse(bldata$Ethnicity==3,1,0)   
+  #Set the binary variable for smoking status
+  population[, "SMO"] <- ifelse(bldata$Current.smoker=="Y",1,0)  
+  #record the history of diabetes (1 = yes, 0 = no)
+  
+  population[, "AGE"] <- population[, "AGE_0"]
+  population[, "MEN"] <- replace(population[, "MEN"], population[, "AGE"] > 51 & population[, "FEMALE"] == 1, 1)
+  population[, "HBA"] <- bldata$HbA1c
+  
+  #Record the BMI of the population
+  #No BMI, so do weight/height^2. Apply ^2 as a multiple of itself, as this is faster in R
+  population[, "BMI"] <- bldata$Weight/(bldata$Height*bldata$Height)
+  #Record the HDL cholesterol (add units)
+  population[, "HDL"] <- bldata$HDL
+  #Record systolic blood pressure(add units)
+  population[, "SBP"] <- bldata$Systolic.BP
+  
+  population[, "QALY"] <- 0 
+  population[, "EQ5D"] <- 0
+  
+  population[, "DEP_H"] <- runif(n_) < (435/4781) #Source: Ali et al 2009. Prevalence of diagnosed depression in South Asian
+  #and white European people with type 1 and type 2 diabetes mellitus in a UK secondary care population
+  
+  #Record the baseline BMI of the population in the HSE data
+  population[,"BMI_0"] <- population[, "BMI"]
+  
+  #Instructions do not specify, so set everyone to be on 1st line therapy
+  population[, "MET"] <- 1
+  #Record whether someone is on 2nd line therapy for T2DM
+  population[,"MET2"] <- 0
+  #Record whether someone is on 3rd line therapy for T2DM
+  population[,"INSU"]<- 0
+  
+  #Mt Hood 2025 Reference Simulation instructions, no history at baseline. 
+  #If the vlaues are missing there is no event of history of an event
+  #If the value is not missing, check if the value is 1. If it is it is an event year, 
+  #otherwise it is a historical event
+  population[,"AMP_E"] <- ifelse(is.na(bldata$Amputation), 0,
+                                 ifelse(bldata$Amputation==1,1,0))
+  population[,"AMP_H"] <- ifelse(is.na(bldata$Amputation), 0,
+                                 ifelse(bldata$Amputation==1,0,1))
+  #No data on 2nd amputation, so set to 0
+  population[,"AMP2_E"] <- 0
+  population[,"AMP2_H"] <- 0
+  
+  population[,"IHD_E"] <- ifelse(is.na(bldata$IHD), 0,
+                                 ifelse(bldata$IHD==1,1,0))
+  population[,"IHD_H"] <- ifelse(is.na(bldata$IHD), 0,
+                                 ifelse(bldata$IHD==1,0,1))
+  population[,"CHF_E"] <- ifelse(is.na(bldata$Heart.failure), 0,
+                                 ifelse(bldata$Heart.failure==1,1,0))
+  population[,"CHF_H"] <- ifelse(is.na(bldata$Heart.failure), 0,
+                                 ifelse(bldata$Heart.failure==1,0,1))
+  population[,"RENAL_E"] <- ifelse(is.na(bldata$Renal.failure), 0,
+                                   ifelse(bldata$Renal.failure==1,1,0))
+  population[,"RENAL_H"] <- ifelse(is.na(bldata$Renal.failure), 0,
+                                   ifelse(bldata$Renal.failure==1,0,1))
+  population[,"STRO_E"] <- ifelse(is.na(bldata$Stroke), 0,
+                                  ifelse(bldata$Stroke==1,1,0))
+  population[,"STRO_H"] <- ifelse(is.na(bldata$Stroke), 0,
+                                  ifelse(bldata$Stroke==1,0,1))
+  population[,"MI_E"] <- ifelse(is.na(bldata$MI), 0,
+                                ifelse(bldata$MI==1,1,0))
+  population[,"MI_H"] <- ifelse(is.na(bldata$MI), 0,
+                                ifelse(bldata$MI==1,0,1))
+  population[,"MI2_E"] <- 0
+  population[,"MI2_H"] <- 0
+  
+  population[,"BLIND_E"] <- ifelse(is.na(bldata$Blindness), 0,
+                                   ifelse(bldata$Blindness==1,1,0))
+  population[,"BLIND_H"] <- ifelse(is.na(bldata$Blindness), 0,
+                                   ifelse(bldata$Blindness==1,0,1))
+  population[,"ULCER_E"] <- ifelse(is.na(bldata$Ulcer), 0,
+                                   ifelse(bldata$Ulcer==1,1,0))
+  population[,"ULCER_H"] <- ifelse(is.na(bldata$Ulcer), 0,
+                                   ifelse(bldata$Ulcer==1,0,1))
+  
+  
+  population[,"MMALB_H"] <- ifelse(bldata$Albuminuria=="Y",1,0)
+  population[,"ATFIB_H"] <- ifelse(bldata$AF=="Y",1,0)
+  population[,"PVD_H"] <- ifelse(bldata$PVD=="Y",1,0)
+  
+  #Add in diabetes treatment specific biomarkers
+  population[,"HAEM"] <- bldata$Haemoglobin 
+  population[,"WBC"] <- bldata$WBC
+  population[,"eGFR"] <- bldata$eGFR
+  population[,"eGFR_U_60"] <- ifelse(population[,"eGFR"]<60,population[,"eGFR"],60)
+  population[,"eGFR_O_60"] <- ifelse(population[,"eGFR"]>60,population[,"eGFR"]-60,0)
+  population[,"HEART_R"] <- bldata$Heart.rate
+  population[,"BMI_U_18_5"] <- ifelse(population[,"BMI"]<18.5,1,0)
+  population[,"BMI_O_E_25"] <- ifelse(population[,"BMI"]>=25,1,0)
+  population[,"LDL"] <- bldata$LDL
+  population[,"LDL_O_35"] <- ifelse(population[,"LDL"]>3.5, population[,"LDL"]-3.5,0)
+  #add in diabetes treatment specific chars
+  population[,"DIAB_DUR"] <- bldata$Duration.of.diabetes
+  
+  #add in values for first observations for each risk factor needed
+  #in the absence of information this will be the baseline value
+  population[,"HBA_0"] <- population[,"HBA"]
+  population[,"LDL_0"] <- population[,"LDL"]
+  population[,"HDL_0"] <- population[, "HDL"]
+  population[,"HEART_R_0"] <- population[,"HEART_R"]
+  population[,"HAEM_0"] <- population[,"HAEM"]
+  population[,"WBC_0"] <- population[,"WBC"]
+  population[,"eGFR_0"] <- population[,"eGFR"]
+  population[,"SMO_0"] <- population[,"SMO"]
+  population[,"SBP_0"] <- population[,"SBP"]
+  
+  #Make all cause death missing, as missing indicates someone is alive in the code
+  population[, "F_ALLCAUSE"] <- NA
+  #Make smoking missing, so you can easily see whether smoking is assessed
+  population[,"p_SMO"]<- NA
+  
+  #Remove the temporary bldata object
+  rm(bldata)
+  
+  return(population)
+}
 

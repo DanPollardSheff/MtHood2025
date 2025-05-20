@@ -118,3 +118,9 @@ p_CC,probability that someone will develop colorectal cancer this year
 p_DEP,probability that someone will develop depression
 p_OST,probability that someone will develop osteoarthritis
 GP,number of GP visits each year
+LY_Y3,Life Years in Year 3
+QALY_Y3,QALYs in Year 3
+Cost_Y3,Costs in Year 3
+LY_Y4,Life Years in Year 3
+QALY_Y4,QALYs in Year 3
+Cost_Y4,Costs in Year 3
