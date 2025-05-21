@@ -179,3 +179,112 @@ Intervention_costs_Embedding <- function(treatment_,
   }
   return(population_)
 }
+
+
+calculate_costs_MtHood2025_C2 <- function(population_, year_, alive_, GlobalVars_) {
+  
+  warning("You are running the cost function for MtHood 2025 challenge 2. This only uses fixed values
+          and does not run any project specific costing adaptations.")
+  
+  #Check are they dead
+  deadthisyear <- is.na(population_[,"F_ALLCAUSE"])==F
+  #If they weren't alive at the start of the year overwrite the dead this year status with false
+  deadthisyear <- ifelse(alive_==F,F,deadthisyear)
+  
+  #Cost in the absence of complications
+  population_[,"DMCOST"][alive_] <-  2324
+  
+  #CVD costs
+  
+  IHDcost <- population_[, "IHD_E"][alive_][deadthisyear==F] *  16348+ #event year costs for IHD 
+    population_[,"IHD_E"][alive_][deadthisyear]*(7087)+ #Change these costs if they died in the same year
+    population_[, "IHD_H"][alive_] * 4145
+  
+  MIcost <- population_[, "MI_E"][alive_][deadthisyear==F] * 11113 + 
+    population_[, "MI_E"][alive_][deadthisyear] * 3874+
+    population_[, "MI_H"][alive_] * 3998 + 
+    population_[, "MI2_E"][alive_][deadthisyear==F] * (11113-3998)+
+    population_[, "MI2_E"][alive_][deadthisyear] * (3874-3998)
+  
+  STROcost <-  population_[, "STRO_E"][alive_][deadthisyear==F]*12558 + 
+    population_[, "STRO_E"][alive_][deadthisyear] * 7546+
+    population_[, "STRO_H"][alive_] * 4126 + 
+    population_[, "STRO2_E"][alive_][deadthisyear==F] * (12558-4126)+
+    population_[, "STRO2_E"][alive_][deadthisyear] * (7546-4126)
+  
+  CHFcost <- population_[,"CHF_E"][alive_][deadthisyear==F]*12558+
+    population_[,"CHF_E"][alive_][deadthisyear]*7546+
+    population_[,"CHF_H"][alive_]*4994
+
+  population_[, "CVDCOST"][alive_] <- 
+    IHDcost+MIcost+STROcost+CHFcost
+  
+  #Renal Failure event year weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 3
+  #Renal Failure historical event weights  hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 4
+  
+  population_[, "NEPHCOST"][alive_] <- 
+      (24027*(540/(540+39+6127+1548))+
+      50626*((39+6127)/(540+39+6127+1548))+
+      38013*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_][deadthisyear==F])+
+      (12014*(540/(540+39+6127+1548))+
+      0*((39+6127)/(540+39+6127+1548))+
+      0*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_][deadthisyear])+
+      (24027*(39874/(39874+1452+25825+3800))+
+      50626*((1452+25825)/(39874+1452+25825+3800))+
+      38013*(3800/(39874+1452+25825+3800)))*(population_[,"RENAL_H"][alive_])
+  
+  population_[, "RETCOST"][alive_] <- 
+    population_[,"BLIND_E"][alive_][deadthisyear==F]*4959+
+    population_[,"BLIND_E"][alive_][deadthisyear]*0+
+    population_[,"BLIND_H"][alive_]*2576
+  
+  population_[, "NEUCOST"][alive_] <- 
+    population_[, "AMP_E"][alive_][deadthisyear==F] * 17693 +
+    population_[, "AMP_E"][alive_][deadthisyear] * 11472
+    population_[, "AMP_H"][alive_] * 6221
+    population_[, "AMP2_E"][alive_][deadthisyear==F] * (17693-6221)+
+    population_[, "AMP2_E"][alive_][deadthisyear==F] * (11472-6221) 
+    population_[, "ULCER_E"][alive_][deadthisyear==F] * 8262 +
+    population_[, "ULCER_E"][alive_][deadthisyear] * 0
+    population_[, "ULCER_H"][alive_] * 1252
+    
+  
+  #Set Cancer, Osteoarthritis and Depression costs to 0 for Mt Hood
+  population_[, "CANCOST"][alive_] <- 
+    population_[, "CANB_E"][alive_] * 0 + 
+    population_[, "CANC_E"][alive_] * 0 
+  
+  population_[, "OSTCOST"][alive_] <- 
+    population_[, "OST_E"][alive_] * 0+
+    population_[, "OST_H"][alive_] * 0
+  
+  population_[, "DEPCOST"][alive_] <- 
+    population_[, "DEP_E"][alive_]* 0+
+    population_[, "DEP_H"][alive_]* 0
+  
+  ##GP
+  population_[, "GP"][alive_] <- 0 #set to 0 for now, but call new GP function here
+  ##Other costs
+  population_[, "OTHCOST"][alive_] <- 
+    population_[, "GP"][alive_] * 0 + 
+    population_[, "PVD_E"][alive_][deadthisyear==F] * 5485 +
+    population_[, "PVD_E"][alive_][deadthisyear] * 0 +
+    population_[, "PVD_H"][alive_] * 1179
+  
+  ##add in undiscounted costs
+  population_[, "YearCOST"][alive_] <-population_[, "DMCOST"][alive_]+
+    population_[, "CVDCOST"][alive_]+population_[, "NEPHCOST"][alive_]+
+    population_[, "RETCOST"][alive_]+population_[, "NEUCOST"][alive_]+
+    population_[, "CANCOST"][alive_]+population_[, "OSTCOST"][alive_]+
+    population_[, "DEPCOST"][alive_]+population_[, "OTHCOST"][alive_]
+  
+  #store cumulative costs
+  population_[, "COST"][alive_] <- population_[, "COST"][alive_]+
+    population_[, "YearCOST"][alive_]
+  #Store cumulative discounted costs
+  population_[, "DiscCOST"][alive_] <- population_[, "DiscCOST"][alive_]+
+    (population_[, "YearCOST"][alive_]/((1+as.numeric(GlobalVars_["disc_rate_costs","Value"]))^year_))
+  
+  
+  return(population_)
+}

@@ -85,7 +85,7 @@ control <- run_simulation(popM1,
                           1)
 
 set.seed(123)
-
+write.csv(control,"Results/ControlMen.csv")
 
 allINTV <- run_simulation(popM1,
                           parameter, 

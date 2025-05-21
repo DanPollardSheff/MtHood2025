@@ -417,7 +417,7 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     ##QALYs
     population_ <- calculate_QALYs(population_, parameters_,  year, alive, GlobalVars_)
     ##Costs
-    population_ <- calculate_costs(population_, parameters_, year, alive, GlobalVars_,treatment_,attend_se)
+    population_ <- calculate_costs_MtHood2025_C2(population_, year, alive, GlobalVars_)
     
     #Record results
     results <- GenerateDetailedresults(results,population_, year, alive, GlobalVars_)

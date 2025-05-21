@@ -209,7 +209,7 @@ calculate_QALYs_default <- function(population_, parameters_,  year_, alive_, Gl
 ##'are alive
 ##'@param GlobalVars_ is the global parameters matrix
 ##'@return population_ is the revised population matrix
-calculate_QALYs_MtHood2025 <- function(population_,  year_, alive_, GlobalVars_) {
+calculate_QALYs_MtHood2025_C1 <- function(population_,  year_, alive_, GlobalVars_) {
   #Warning, so this code is not accidentitally used in an model run for an actual project.
   warning("This model run uses the function for MtHood 2025 to calculate utilities/QALYs. This uses fixed values & uses utility decrements against good practice recommendations from ISPOR 2019 (10.1016/j.jval.2019.01.004) and against the prefered approach NICE methods guide (point 4.3.7, https://www.nice.org.uk/process/pmg36/resources/nice-health-technology-evaluations-the-manual-pdf-72286779244741, accessed 16th May 2025). This should only be used when running MtHood challenge simulations")
   #Calculate each person's utility this year
@@ -419,6 +419,73 @@ calculate_QALYs_MtHood2025 <- function(population_,  year_, alive_, GlobalVars_)
   return(population_)
   }
 
+calculate_QALYs_MtHood2025_C2 <- function(population_,  year_, alive_, GlobalVars_) {
+  #Warning, so this code is not accidentitally used in an model run for an actual project.
+  warning("This model run uses the function for MtHood 2025 to calculate utilities/QALYs. This uses fixed values & uses utility decrements against good practice recommendations from ISPOR 2019 (10.1016/j.jval.2019.01.004) and against the prefered approach NICE methods guide (point 4.3.7, https://www.nice.org.uk/process/pmg36/resources/nice-health-technology-evaluations-the-manual-pdf-72286779244741, accessed 16th May 2025). This should only be used when running MtHood challenge simulations")
+  #Calculate each person's utility this year
+ 
+    #Constant
+    population_[,"EQ5D"][alive_] <- 0.807
+    
+    #Retinopathy
+    dec_ret <- min(-0.000*(population_[,"BLIND_E"][alive_]),
+                   -0.000*(population_[,"BLIND_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_ret
+    
+    #Nephropathy
+    #Renal Failure event year weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 3
+    #Renal Failure historical event weights  hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 4
+    dec_neph <- min(-0.330*(population_[,"RENAL_E"][alive_]),
+                    -0.330*(population_[,"RENAL_H"][alive_]))
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neph
+    
+    rm(dec_neph)
+    
+    #Neuropathy
+    #This model only tracks an ulcer state, so only apply in year 1
+    dec_neuro <- min(-0.210*(population_[,"ULCER_E"][alive_]),
+                     -0.210*(population_[,"ULCER_H"][alive_])
+                     -0.172*(population_[,"AMP_E"][alive_]),
+                     -0.172*(population_[,"AMP2_E"][alive_]))
+    
+    #Apply the biggest reduction in utility for nephropathy
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neuro
+    rm(dec_neuro)
+    
+    #Coronary heart disease
+    
+    dec_CHD <- min( -0.065*(population_[,"MI_E"][alive_]),
+                    -0.000*(population_[,"MI_H"][alive_]),
+                    -0.065*(population_[,"MI2_E"][alive_]),
+                    -0.000*(population_[,"MI2_H"][alive_]),
+                    -0.101*(population_[,"CHF_E"][alive_]),
+                    -0.101*(population_[,"CHF_H"][alive_]),
+                    -0.000*(population_[,"IHD_E"][alive_]),
+                    -0.000*(population_[,"IHD_H"][alive_]),
+                    -0.165*(population_[,"STRO_E"][alive_]),
+                    -0.165*(population_[,"STRO_H"][alive_]),
+                    -0.165*(population_[,"STRO2_E"][alive_]),
+                    -0.165*(population_[,"STRO2_H"][alive_]))
+    
+    population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_CHD
+    rm(dec_CHD) 
+  
+  #Calculate QALYs
+  population_[,"QALY"][alive_] <- population_[,"QALY"][alive_] + 
+    population_[,"EQ5D"][alive_]
+  population_[,"DiscQALY"][alive_] <- population_[,"DiscQALY"][alive_] + 
+    (population_[,"EQ5D"][alive_]/
+       ((1+as.numeric(GlobalVars_["disc_rate_QALYs", "Value"]))^year_))
+  
+  
+  return(population_)
+}
+
+
+
+
 
 ##'@param population_ is the population matrix
 ##'@param parameters_ is a single row of the parameters matrix
@@ -428,10 +495,12 @@ calculate_QALYs_MtHood2025 <- function(population_,  year_, alive_, GlobalVars_)
 ##'@param GlobalVars_ is the global parameters matrix
 ##'@return population_ is the revised population matrix
 calculate_QALYs <- function(population_, parameters_,  year_, alive_, GlobalVars_){
-  #If the option is selected use the Mt Hood utilties function
-  if(GlobalVars_["Mt Hood Utilities", "Value"]==T){
-  population_ <- calculate_QALYs_MtHood2025(population_,  year_, alive_, GlobalVars_)
-  }else{#Otherwise use the default utilities function
+  #If the option is selected use the Mt Hood Challenge 1 utility function
+  if(GlobalVars_["Mt Hood Utilities", "Value"]=="C1"){
+  population_ <- calculate_QALYs_MtHood2025C1(population_,  year_, alive_, GlobalVars_)
+  }else if (GlobalVars_["Mt Hood Utilities", "Value"]=="C2"){  #If the option is selected use the Mt Hood Challenge 2 utility function
+  population_ <- calculate_QALYs_MtHood2025C2(population_,  year_, alive_, GlobalVars_)
+  } else{#Otherwise use the default utilities function
   population_ <- calculate_QALYs_default(population_, parameters_,  year_, alive_, GlobalVars_)
   }
   return(population_)

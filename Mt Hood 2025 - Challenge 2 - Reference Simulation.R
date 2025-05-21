@@ -84,7 +84,7 @@ test <- run_model_bootstrap(pop_cont,
                                       GlobalVars,
                                       LifeTables,
                                       MtHood2025C2Data,
-                             10000
+                             100
 )
 
 end_time <- Sys.time()
