@@ -76,16 +76,16 @@ test <- run_simulation_MtHood2025_C2(pop_cont,
 
 
 
-
+start_time <- Sys.time()
 test <- run_model_bootstrap(pop_cont,
                                       parameter,
                                       5,
                                       "BC_Control",
                                       GlobalVars,
                                       LifeTables,
-                                      1,
                                       MtHood2025C2Data,
-                             10
+                             10000
 )
 
-test
+end_time <- Sys.time()
+end_time - start_time
