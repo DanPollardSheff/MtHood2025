@@ -59,155 +59,33 @@ if(folder_check==F){
   dir.create("Results")
 }
 ################################################################################
-
-##Model run - Men
-set.seed(123)
-popM  <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), F, PopulationVariables)
-rands <- generate_random(length(popM[,"ID"]))
+pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",PopulationVariables)
+GlobalVars["Results_output", "Value"] <- "MtHood2025C2"
 
 
-
-controlM <- run_simulation(popM,
-                          parameter, 
-                          40, 
-                          "Baseline", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-write.csv(controlM, "Results/MtHoodReferenceSimulation, no intv, Male.csv")
-
-A1cINTVM <- run_simulation(popM,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_A1c", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(A1cINTVM, "Results/MtHoodReferenceSimulation, A1c only, Male.csv")
+test <- run_simulation_MtHood2025_C2(pop_cont,
+                            parameter,
+                            5,
+                            "BC_Control",
+                            GlobalVars,
+                            LifeTables,
+                            1,
+                            MtHood2025C2Data
+)
 
 
-BMIINTVM <- run_simulation(popM,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_BMI", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(BMIINTVM, "Results/MtHoodReferenceSimulation, BMI only, Male.csv")
 
 
-SBPINTVM <- run_simulation(popM,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_SBP", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
 
-write.csv(SBPINTVM, "Results/MtHoodReferenceSimulation, SBP only, Male.csv")
+test <- run_model_bootstrap(pop_cont,
+                                      parameter,
+                                      5,
+                                      "BC_Control",
+                                      GlobalVars,
+                                      LifeTables,
+                                      1,
+                                      MtHood2025C2Data,
+                             10
+)
 
-LDLINTVM <- run_simulation(popM,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_LDL", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(LDLINTVM, "Results/MtHoodReferenceSimulation, LDL only, Male.csv")
-
-
-allINTVM <- run_simulation(popM,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_ALL", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(allINTVM, "Results/MtHoodReferenceSimulation, all interventions, Male.csv")
-
-
-#Women
-popF  <- build_population_MtHood2025(as.numeric(GlobalVars["n", "Value"]), T, PopulationVariables)
-
-
-controlF <- run_simulation(popF,
-                          parameter, 
-                          40, 
-                          "Baseline", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(controlF, "Results/MtHoodReferenceSimulation, no intv, Female.csv")
-
-
-A1cINTVF <- run_simulation(popF,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_A1c", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(A1cINTVF, "Results/MtHoodReferenceSimulation, A1c only, Female.csv")
-
-
-BMIINTVF <- run_simulation(popF,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_BMI", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(BMIINTVF, "Results/MtHoodReferenceSimulation, BMI only, Female.csv")
-
-
-SBPINTVF <- run_simulation(popF,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_SBP", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(SBPINTVF, "Results/MtHoodReferenceSimulation, SBP only, Female.csv")
-
-
-LDLINTVF <- run_simulation(popF,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_LDL", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(LDLINTVF, "Results/MtHoodReferenceSimulation, LDL only, Female.csv")
-
-
-allINTVF <- run_simulation(popF,
-                          parameter, 
-                          40, 
-                          "Mt_HOOD_RS_ALL", 
-                          GlobalVars,
-                          rands,
-                          LifeTables,
-                          1)
-
-write.csv(allINTVF, "Results/MtHoodReferenceSimulation, all interventions, Female.csv")
-
+test

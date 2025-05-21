@@ -275,7 +275,7 @@ build_population_MtHood2025_C2 <- function(data_, treatment_, PopulationVariable
   #extract only the baseline characteristics
   bldata <- data_[["BaselineCharacteristics.csv"]]
   #subset by Group
-  if (treatment_=="Control"){
+  if (treatment_=="BC_Control"|treatment_=="S1_Control"|treatment_=="S2_Control"|treatment_=="NoEffect_Control"){
     bldata <- subset(bldata, Group==1)
   }else{
     bldata <- subset(bldata, Group==2)
@@ -318,7 +318,7 @@ build_population_MtHood2025_C2 <- function(data_, treatment_, PopulationVariable
   population[, "QALY"] <- 0 
   population[, "EQ5D"] <- 0
   
-  population[, "DEP_H"] <- runif(n_) < (435/4781) #Source: Ali et al 2009. Prevalence of diagnosed depression in South Asian
+  population[, "DEP_H"] <- runif(length(bldata[,"ID"])) < (435/4781) #Source: Ali et al 2009. Prevalence of diagnosed depression in South Asian
   #and white European people with type 1 and type 2 diabetes mellitus in a UK secondary care population
   
   #Record the baseline BMI of the population in the HSE data

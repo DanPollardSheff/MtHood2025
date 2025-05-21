@@ -108,3 +108,57 @@ run_model <- function(population_,
   }
   return(modelresults)
 }
+
+
+####'This function runs the model deterministically but runs different inner loop Monte Carlo simulations
+####'@param population_, is the population matrix
+####'@param parameters_, is the parameters matrix
+####'@param endtime_, is the number of years to run the simulation for
+####'@param GlobalVars_, is the matrix giving the global variables
+####'@param LifeTables_, is a dataframe containing life table information in formate
+####'that can easily be matched to the population matrix
+####'draw for each patient in each year for every event in which a random number 
+####'is required 
+####'@param MtHood2025C2_ is an array containing the baseline characteristics and life paths
+####'for every person in the MtHood2025 Challenge 2 instructions
+####'@param boot_numb_ is the number of bootstrap replications to conduct
+####'@return results, is the results matrix
+
+run_model_bootstrap <- function(population_, 
+                                parameters_, 
+                                endtime_, 
+                                treatment_, 
+                                GlobalVars_,
+                                LifeTables_, 
+                                MtHood2025C2_,
+                                boot_numb_){
+  
+  iterations <- 1:boot_numb_
+  #set up parrallel processing
+  #these are the additional global variables that need to be set for parrallel
+  #processing functions
+  numCores <- detectCores()-1
+  numCores <- min (numCores, as.numeric(GlobalVars["Number of cores", "Value"]))
+  cl <- makeCluster(numCores)
+  
+  ##Don;t set  a seed for parrallel processing, in bootstrapping you want different random numbers
+  
+  #Set up the cluster processing and push all objects in the global environment 
+  #to all the clusters
+  clusterExport(cl, ls(envir = .GlobalEnv))
+  modelresults <- parLapply(cl = cl,
+                            iterations, 
+                            run_simulation_MtHood2025_C2,
+                            population_ = population_,
+                            parameters_ = parameters_,
+                            endtime_ = endtime_,
+                            treatment_ = treatment_, 
+                            GlobalVars_ = GlobalVars_, 
+                            LifeTables_ = LifeTables_,
+                            SOUR_ = 1, #For bootstrapping force deterministic
+                            MtHood2025C2_ = MtHood2025C2_)
+  stopCluster(cl)
+  
+  return (modelresults)
+  
+}

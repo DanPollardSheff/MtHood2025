@@ -248,7 +248,6 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
 ####'@param parameters_, is the full parameters matrix
 ####'@param endtime_, is the number of years to run the simulation for
 ####'@param GlobalVars_, is the matrix giving the global variables
-####'@param random_numbs_, is an array of common random numbers giving a random number
 ####'@param LifeTables_, is a dataframe containing life table information in formate
 ####'that can easily be matched to the population matrix
 ####'@param SOUR_, is the current second order uncertainty run
@@ -259,7 +258,7 @@ run_simulation <- function(population_, parameters_, endtime_, treatment_, Globa
 ####'@return results, is the results matrix
 ####'@return psaresults, is a summary set of results to produce in the PSA
 
-run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, treatment_, GlobalVars_, random_numbs_,LifeTables_, SOUR_,MtHood2025C2_){
+run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, treatment_, GlobalVars_,LifeTables_, SOUR_,MtHood2025C2_,bootit_){
   
   ##reduce the parameters matrix down to the correct row
   if(GlobalVars_["run_psa","Value"]==F){
@@ -267,6 +266,9 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
   }else{
     parameters_ <- parameters_[SOUR_+1,]
   }
+  
+  attend_se <-matrix(data = 0, nrow = length(population_[,"ID"]), ncol = 3)
+  attend_se[,1] <- 1:length(population_[,"ID"])
   
   ##Get the right data frames for risk factor / event progression by treatment
   #HbA1c, BMI, SBP
@@ -351,6 +353,10 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
   #start year at 0
   year <- 0
   
+  #As this function need random numbers on the fly generate them here
+  random_numbs <- generate_random(length(population_[,"ID"]))
+  
+  
   #initialise the results matrix
   results <- GenerateResultsMatrix(GlobalVars_, endtime_)
   #initialise a PSA results matrix, if it is a PSA
@@ -371,13 +377,13 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     dead <- is.na(population_[,"F_ALLCAUSE"])==F
     
     #Estimate Diabetes Related complications and all cause deaths for this year
-    population_ <- update_events_UKPDS82(population_,parameters_, treatment_, year, alive, random_numbs_, LifeTables_)
+    population_ <- update_events_UKPDS82(population_,parameters_, treatment_, year, alive, random_numbs, LifeTables_)
     #Estimate Depression
-    population_ <- update_events_SPHR_depression(population_,parameters_,year,alive,random_numbs_)
+    population_ <- update_events_SPHR_depression(population_,parameters_,year,alive,random_numbs)
     #Estimate Osteoarthritis
-    population_ <- update_events_SPHR_osteoarthritis(population_,parameters_,year,alive,random_numbs_)
+    population_ <- update_events_SPHR_osteoarthritis(population_,parameters_,year,alive,random_numbs)
     #Estimate Cancer incidence
-    population_ <- update_events_SPHR_cancer(population_, parameters_,year, alive,random_numbs_)
+    population_ <- update_events_SPHR_cancer(population_, parameters_,year, alive,random_numbs)
     
     #Stop the model if dead people have events
     if(sum(population_[,"MI_E"][dead])  !=0|
@@ -514,7 +520,26 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
            GlobalVars_["run_psa","Value"]==F){#option to produce the patient 
     #charateristics matrix for checking results stability for number of patients
     return(population_)
-  }else{#default is the 
+  }else if (GlobalVars_["Results_output", "Value"] == "MtHood2025C2"){
+    MtHoodresults <- matrix(data = NA, nrow = length(population_[,"ID"]), ncol = 6)
+    names <- c("3 year life expectancy",
+                  "3 year Quality Adjusted Life Years",
+                  "3 year costs",
+                  "4 year life expectancy",
+                  "4 year Quality Adjusted Life Years",
+                  "4 year costs")
+    colnames(MtHoodresults) <- names
+    rm(names)
+    MtHoodresults[,"3 year life expectancy"] <- population_[,"LY_Y3"]
+    MtHoodresults[,"3 year Quality Adjusted Life Years"] <- population_[,"QALY_Y3"]
+    MtHoodresults[,"3 year costs"] <- population_[,"Cost_Y3"]
+    MtHoodresults[,"4 year life expectancy"] <- population_[,"LY_Y4"]
+    MtHoodresults[,"4 year Quality Adjusted Life Years"] <- population_[,"QALY_Y4"]
+    MtHoodresults[,"4 year costs"] <- population_[,"Cost_Y4"]
+
+    return(MtHoodresults)
+  }
+  else{#default is the 
     return(results)
   }
 }

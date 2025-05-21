@@ -306,7 +306,6 @@ update_history_MtHood2025C2 <- function(population_,
   population_[,"HBA"][alive_]       <- A1c_[,(year_+3)][alive_]
   population_[,"BMI"][alive_]       <- BMI_[,(year_+3)][alive_]
   population_[,"SBP"][alive_]       <- SBP_[,(year_+3)][alive_]
-  population_[,"SMO"][alive_]       <- SMO_[,(year_+3)][alive_]
   population_[,"HDL"][alive_]       <- HDL_[,(year_+3)][alive_]
   population_[,"LDL"][alive_]       <- LDL_[,(year_+3)][alive_]
   population_[,"HAEM"][alive_]      <- HEAM_[,(year_+3)][alive_]
