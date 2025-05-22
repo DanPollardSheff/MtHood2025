@@ -448,7 +448,9 @@ calculate_QALYs_MtHood2025_C2 <- function(population_,  year_, alive_, GlobalVar
     dec_neuro <- min(-0.210*(population_[,"ULCER_E"][alive_]),
                      -0.210*(population_[,"ULCER_H"][alive_])
                      -0.172*(population_[,"AMP_E"][alive_]),
-                     -0.172*(population_[,"AMP2_E"][alive_]))
+                     -0.172*(population_[,"AMP_H"][alive_]),
+                     -0.172*(population_[,"AMP2_E"][alive_]),
+                     -0.172*(population_[,"AMP2_H"][alive_]))
     
     #Apply the biggest reduction in utility for nephropathy
     population_[,"EQ5D"][alive_] <-  population_[,"EQ5D"][alive_] + dec_neuro
@@ -497,9 +499,9 @@ calculate_QALYs_MtHood2025_C2 <- function(population_,  year_, alive_, GlobalVar
 calculate_QALYs <- function(population_, parameters_,  year_, alive_, GlobalVars_){
   #If the option is selected use the Mt Hood Challenge 1 utility function
   if(GlobalVars_["Mt Hood Utilities", "Value"]=="C1"){
-  population_ <- calculate_QALYs_MtHood2025C1(population_,  year_, alive_, GlobalVars_)
+  population_ <- calculate_QALYs_MtHood2025_C1(population_,  year_, alive_, GlobalVars_)
   }else if (GlobalVars_["Mt Hood Utilities", "Value"]=="C2"){  #If the option is selected use the Mt Hood Challenge 2 utility function
-  population_ <- calculate_QALYs_MtHood2025C2(population_,  year_, alive_, GlobalVars_)
+  population_ <- calculate_QALYs_MtHood2025_C2(population_,  year_, alive_, GlobalVars_)
   } else{#Otherwise use the default utilities function
   population_ <- calculate_QALYs_default(population_, parameters_,  year_, alive_, GlobalVars_)
   }
