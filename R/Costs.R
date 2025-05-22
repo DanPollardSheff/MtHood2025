@@ -50,6 +50,7 @@ calculate_costs <- function(population_, parameters_, year_, alive_, GlobalVars_
     population_[, "CHF_H"][alive_] * parameters_[,"COST_CHF_H"]+
     population_[,"ATFIB_E"][alive_]*0+ 
     population_[,"ATFIB_H"][alive_]*0+# note no cost was identified, but code will work if a parameter is added here
+    
     #Adjusting for mortality
     #UKPDS OM v2 does not attribute mortality to events
     #So if they die in a year they have an event, costs due to death are applied
@@ -186,90 +187,107 @@ calculate_costs_MtHood2025_C2 <- function(population_, year_, alive_, GlobalVars
   warning("You are running the cost function for MtHood 2025 challenge 2. This only uses fixed values
           and does not run any project specific costing adaptations.")
   
-  #Check are they dead
-  deadthisyear <- is.na(population_[,"F_ALLCAUSE"])==F
-  #If they weren't alive at the start of the year overwrite the dead this year status with false
-  deadthisyear <- ifelse(alive_==F,F,deadthisyear)
+  population_[,"DMCOST"][alive_] <- 2324
   
-  #Cost in the absence of complications
-  population_[,"DMCOST"][alive_] <-  2324
-  
-  #CVD costs
-  
-  IHDcost <- population_[, "IHD_E"][alive_][deadthisyear==F] *  16348+ #event year costs for IHD 
-    population_[,"IHD_E"][alive_][deadthisyear]*(7087)+ #Change these costs if they died in the same year
-    population_[, "IHD_H"][alive_] * 4145
-  
-  MIcost <- population_[, "MI_E"][alive_][deadthisyear==F] * 11113 + 
-    population_[, "MI_E"][alive_][deadthisyear] * 3874+
-    population_[, "MI_H"][alive_] * 3998 + 
-    population_[, "MI2_E"][alive_][deadthisyear==F] * (11113-3998)+
-    population_[, "MI2_E"][alive_][deadthisyear] * (3874-3998)
-  
-  STROcost <-  population_[, "STRO_E"][alive_][deadthisyear==F]*12558 + 
-    population_[, "STRO_E"][alive_][deadthisyear] * 7546+
-    population_[, "STRO_H"][alive_] * 4126 + 
-    population_[, "STRO2_E"][alive_][deadthisyear==F] * (12558-4126)+
-    population_[, "STRO2_E"][alive_][deadthisyear] * (7546-4126)
-  
-  CHFcost <- population_[,"CHF_E"][alive_][deadthisyear==F]*12558+
-    population_[,"CHF_E"][alive_][deadthisyear]*7546+
-    population_[,"CHF_H"][alive_]*4994
-
   population_[, "CVDCOST"][alive_] <- 
-    IHDcost+MIcost+STROcost+CHFcost
+    population_[, "IHD_E"][alive_] * 16348 + 
+    population_[, "IHD_H"][alive_] * 4145  + 
+    population_[, "MI_E"][alive_] * 11113 + 
+    population_[, "MI_H"][alive_] * 3998 + 
+    population_[, "MI2_E"][alive_] * (11113 - 3998) + 
+    #only add on the additional costs of a 2nd MI, and do not apply two sets of history costs
+    population_[, "STRO_E"][alive_] * 12558 + 
+    population_[, "STRO_H"][alive_] * 4126 +
+    population_[, "STRO2_E"][alive_] * (12558-4126) + 
+    #only add on the additional costs of a 2nd stroke, and do not apply two sets of history costs
+    population_[, "CHF_E"][alive_] * 6597+
+    population_[, "CHF_H"][alive_] * 4994+
+    population_[,"ATFIB_E"][alive_]*0+ 
+    population_[,"ATFIB_H"][alive_]*0+# note no cost was identified, but code will work if a parameter is added here
   
-  #Renal Failure event year weights for hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 3
-  #Renal Failure historical event weights  hemodialysis, peritoneal dialysis and transplant come from https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf (accessed 16th May 2025), page 4
+    #Adjusting for mortality
+    #UKPDS OM v2 does not attribute mortality to events
+    #So if they die in a year they have an event, costs due to death are applied
+    ifelse(population_[,"IHD_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F), #apply lower costs if the CHF was fatal
+           (7087-16348),
+           0)+
+    ifelse(population_[,"MI_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F), #apply lower costs if the MI was fatal
+           (3874-11113),
+           0)+
+    ifelse(population_[,"MI2_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F), #apply lower costs if the 2nd MI was fatal
+           (3874-11113),
+           0)+
+    ifelse(population_[,"STRO_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F), #apply lower costs if the Stroke was fatal
+           (7546-12558),
+           0)+
+    ifelse(population_[,"STRO2_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F), #apply lower costs if the 2nd Stroke was fatal
+           (7546-12558),
+           0)
+  
+  renal_cost_event_nonfatal <- (24027*(540/(540+39+6127+1548))+
+                                  50626*((39+6127)/(540+39+6127+1548))+
+                                  38013*(1548/(540+39+6127+1548)))
+  renal_cost_event_fatal    <- (12014*(540/(540+39+6127+1548))+
+                                  0*((39+6127)/(540+39+6127+1548))+
+                                  0*(1548/(540+39+6127+1548)))
+  renal_cost_historical     <- 24027*(39874/(39874+1452+25825+3800))+
+                               50626*((1452+25825)/(39874+1452+25825+3800))+
+                               38013*(3800/(39874+1452+25825+3800))
   
   population_[, "NEPHCOST"][alive_] <- 
-      (24027*(540/(540+39+6127+1548))+
-      50626*((39+6127)/(540+39+6127+1548))+
-      38013*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_][deadthisyear==F])+
-      (12014*(540/(540+39+6127+1548))+
-      0*((39+6127)/(540+39+6127+1548))+
-      0*(1548/(540+39+6127+1548)))*(population_[,"RENAL_E"][alive_][deadthisyear])+
-      (24027*(39874/(39874+1452+25825+3800))+
-      50626*((1452+25825)/(39874+1452+25825+3800))+
-      38013*(3800/(39874+1452+25825+3800)))*(population_[,"RENAL_H"][alive_])
+    population_[, "RENAL_E"][alive_] * renal_cost_event_nonfatal+
+    population_[, "RENAL_H"][alive_] * renal_cost_historical+
+    population_[, "MMALB_E"][alive_]*0+ # note no cost was identified, but code will work if a parameter is added here
+    population_[, "MMALB_H"][alive_]*0+  # note no cost was identified, but code will work if a parameter is added here
+  
+  #Adjust in case renal failure happens in a year with a fatality
+  ifelse(population_[,"RENAL_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F), #apply lower costs if the 2nd Stroke was fatal
+         (renal_cost_event_fatal-renal_cost_event_nonfatal), #Add the difference between a fatal and non-fatal renal event year
+         0)
+  
   
   population_[, "RETCOST"][alive_] <- 
-    population_[,"BLIND_E"][alive_][deadthisyear==F]*4959+
-    population_[,"BLIND_E"][alive_][deadthisyear]*0+
-    population_[,"BLIND_H"][alive_]*2576
+    population_[, "BLIND_E"][alive_] * 4959 + 
+    population_[, "BLIND_H"][alive_] * 2576 +
+    ifelse(population_[,"BLIND_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F),
+    (0-4959), #Add the difference between a fatal and non-fatal blind event year
+    0)
   
   population_[, "NEUCOST"][alive_] <- 
-    population_[, "AMP_E"][alive_][deadthisyear==F] * 17693 +
-    population_[, "AMP_E"][alive_][deadthisyear] * 11472
-    population_[, "AMP_H"][alive_] * 6221
-    population_[, "AMP2_E"][alive_][deadthisyear==F] * (17693-6221)+
-    population_[, "AMP2_E"][alive_][deadthisyear==F] * (11472-6221) 
-    population_[, "ULCER_E"][alive_][deadthisyear==F] * 8262 +
-    population_[, "ULCER_E"][alive_][deadthisyear] * 0
-    population_[, "ULCER_H"][alive_] * 1252
-    
+    population_[, "AMP_E"][alive_] * 17693 +
+    population_[, "AMP_H"][alive_] * 6221+
+    population_[, "AMP2_E"][alive_] * 17693+
+    population_[, "AMP2_H"][alive_] * (6221)+ #Applied additive, assuming management of 1 amputation does not help with the other
+    population_[, "ULCER_E"][alive_] * 8262+
+    population_[, "ULCER_H"][alive_] * 1252+
+    ifelse((population_[,"AMP_E"][alive_]==1|population_[, "AMP2_E"][alive_]==1)&is.na(population_[,"F_ALLCAUSE"][alive_]==F),
+    (11472-17693), #Add the difference between a fatal and non-fatal amputation event year
+    0)+
+    ifelse(population_[,"ULCER_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F),
+    (0-8262),#Add the difference between a fatal and non-fatal Ulcer event year
+    0)
   
-  #Set Cancer, Osteoarthritis and Depression costs to 0 for Mt Hood
+  #Remove for Mt Hood 2025, as no cost in general challenge
   population_[, "CANCOST"][alive_] <- 
-    population_[, "CANB_E"][alive_] * 0 + 
-    population_[, "CANC_E"][alive_] * 0 
+   0
   
+  #Remove for Mt Hood 2025, as no cost in general challenge
   population_[, "OSTCOST"][alive_] <- 
-    population_[, "OST_E"][alive_] * 0+
-    population_[, "OST_H"][alive_] * 0
+    0
   
   population_[, "DEPCOST"][alive_] <- 
-    population_[, "DEP_E"][alive_]* 0+
-    population_[, "DEP_H"][alive_]* 0
+    0
   
   ##GP
-  population_[, "GP"][alive_] <- 0 #set to 0 for now, but call new GP function here
+  population_[, "GP"][alive_] <- 0 
   ##Other costs
   population_[, "OTHCOST"][alive_] <- 
     population_[, "GP"][alive_] * 0 + 
-    population_[, "PVD_E"][alive_][deadthisyear==F] * 5485 +
-    population_[, "PVD_E"][alive_][deadthisyear] * 0 +
-    population_[, "PVD_H"][alive_] * 1179
+    population_[,"PVD_E"][alive_]*5485+
+    population_[,"PVD_H"][alive_]*1179+
+    ifelse(population_[,"PVD_E"][alive_]==1&is.na(population_[,"F_ALLCAUSE"][alive_]==F),
+           (0-5485),#Add the difference between a fatal and non-fatal Ulcer event year
+           0)
   
   ##add in undiscounted costs
   population_[, "YearCOST"][alive_] <-population_[, "DMCOST"][alive_]+
@@ -277,6 +295,7 @@ calculate_costs_MtHood2025_C2 <- function(population_, year_, alive_, GlobalVars
     population_[, "RETCOST"][alive_]+population_[, "NEUCOST"][alive_]+
     population_[, "CANCOST"][alive_]+population_[, "OSTCOST"][alive_]+
     population_[, "DEPCOST"][alive_]+population_[, "OTHCOST"][alive_]
+  
   
   #store cumulative costs
   population_[, "COST"][alive_] <- population_[, "COST"][alive_]+

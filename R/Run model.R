@@ -124,7 +124,7 @@ run_model <- function(population_,
 ####'@param boot_numb_ is the number of bootstrap replications to conduct
 ####'@return results, is the results matrix
 
-run_model_bootstrap <- function(population_, 
+run_model_bootstrap_MtHood2025_C2 <- function(population_, 
                                 parameters_, 
                                 endtime_, 
                                 treatment_, 

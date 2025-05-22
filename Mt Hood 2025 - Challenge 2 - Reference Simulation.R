@@ -54,12 +54,23 @@ source("all_model_files.R")
 ################################################################################
 #Check if there is a folder called Results, and if not make it (it will be 
 #ignored by git version control and anything saved here will not be on Github)
-folder_check <- file.exists("Results")
+folder_check <- file.exists("Results/Challenge 2")
 if(folder_check==F){
-  dir.create("Results")
+  dir.create("Results/Challenge 2")
 }
 ################################################################################
 pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",PopulationVariables)
+#Produce standard results for error checking
+test_pl <- run_simulation_MtHood2025_C2(pop_cont,
+                                     parameter,
+                                     5,
+                                     "BC_Control",
+                                     GlobalVars,
+                                     LifeTables,
+                                     1,#SOUR, so 1 means determinsitic model run
+                                     MtHood2025C2Data
+)
+
 GlobalVars["Results_output", "Value"] <- "MtHood2025C2"
 
 
@@ -69,23 +80,29 @@ test <- run_simulation_MtHood2025_C2(pop_cont,
                             "BC_Control",
                             GlobalVars,
                             LifeTables,
-                            1,
+                            1,#SOUR, so 1 means determinsitic model run
                             MtHood2025C2Data
 )
 
+#Return to default results
+GlobalVars["Results_output", "Value"] <- ""
 
+test_boot_cont <- run_model_bootstrap_MtHood2025_C2(pop_cont,
+                                               parameter,
+                                               50,
+                                               "BC_Control",
+                                               GlobalVars,
+                                               LifeTables,
+                                               MtHood2025C2Data,
+                                               20)
+#Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
 
-
-start_time <- Sys.time()
-test <- run_model_bootstrap(pop_cont,
-                                      parameter,
-                                      5,
-                                      "BC_Control",
-                                      GlobalVars,
-                                      LifeTables,
-                                      MtHood2025C2Data,
-                             100
-)
-
-end_time <- Sys.time()
-end_time - start_time
+test_boot_intv <- run_model_bootstrap_MtHood2025_C2(pop_cont,
+                                               parameter,
+                                               50,
+                                               "BC_INTV",
+                                               GlobalVars,
+                                               LifeTables,
+                                               MtHood2025C2Data,
+                                               20)
+#Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem

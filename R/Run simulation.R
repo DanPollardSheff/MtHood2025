@@ -558,25 +558,25 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
   ##Get the right data frames for risk factor / event progression by treatment
   #HbA1c, BMI, SBP
   if(treatment_=="BC_Control"|treatment_=="BC_INTV"){ # If running intervention or control for the basecase, load the basecase A1c trajectory
-            A1c <- MtHood2025C2_$A1cBC.csv
-            BMI <- MtHood2025C2_$BMIBC.csv
-            SBP <- MtHood2025C2_$SBPBC.csv
+    A1c <- MtHood2025C2_$A1cBC.csv
+    BMI <- MtHood2025C2_$BMIBC.csv
+    SBP <- MtHood2025C2_$SBPBC.csv
   }else if (treatment_=="S1_Control"|treatment_=="S1_INTV"){ # If running intervention or control for the Scenario 1, load the Scenario 1 A1c trajectory
-            A1c <- MtHood2025C2_$A1cS1.csv
-            BMI <- MtHood2025C2_$BMIS1.csv
-            SBP <- MtHood2025C2_$SBPS1.csv
-            
+    A1c <- MtHood2025C2_$A1cS1.csv
+    BMI <- MtHood2025C2_$BMIS1.csv
+    SBP <- MtHood2025C2_$SBPS1.csv
+    
   }else if (treatment_=="S2_Control"|treatment_=="S2_INTV"){ # If running intervention or control for the Scenario 2, load the Scenario 2 A1c trajectory
-            A1c <- MtHood2025C2_$A1cS2.csv
-            BMI <- MtHood2025C2_$BMIS2.csv
-            SBP <- MtHood2025C2_$SBPS2.csv
-            
+    A1c <- MtHood2025C2_$A1cS2.csv
+    BMI <- MtHood2025C2_$BMIS2.csv
+    SBP <- MtHood2025C2_$SBPS2.csv
+    
   }else {
-            A1c <- MtHood2025C2_$A1cNoEffect.csv #Otherwise load the no effect A1c trajectories
-            BMI <- MtHood2025C2_$BMINoEffect.csv
-            SBP <- MtHood2025C2_$SBPNoEffect.csv
-            
-            
+    A1c <- MtHood2025C2_$A1cNoEffect.csv #Otherwise load the no effect A1c trajectories
+    BMI <- MtHood2025C2_$BMINoEffect.csv
+    SBP <- MtHood2025C2_$SBPNoEffect.csv
+    
+    
   }
   #Extract the other risk factors that do not depend on treatment arm for progression
   SMO         <- MtHood2025C2_$Smoking.csv
@@ -808,11 +808,11 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
   }else if (GlobalVars_["Results_output", "Value"] == "MtHood2025C2"){
     MtHoodresults <- matrix(data = NA, nrow = length(population_[,"ID"]), ncol = 6)
     names <- c("3 year life expectancy",
-                  "3 year Quality Adjusted Life Years",
-                  "3 year costs",
-                  "4 year life expectancy",
-                  "4 year Quality Adjusted Life Years",
-                  "4 year costs")
+               "3 year Quality Adjusted Life Years",
+               "3 year costs",
+               "4 year life expectancy",
+               "4 year Quality Adjusted Life Years",
+               "4 year costs")
     colnames(MtHoodresults) <- names
     rm(names)
     MtHoodresults[,"3 year life expectancy"] <- population_[,"LY_Y3"]
@@ -821,7 +821,7 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     MtHoodresults[,"4 year life expectancy"] <- population_[,"LY_Y4"]
     MtHoodresults[,"4 year Quality Adjusted Life Years"] <- population_[,"QALY_Y4"]
     MtHoodresults[,"4 year costs"] <- population_[,"Cost_Y4"]
-
+    
     return(MtHoodresults)
   }
   else{#default is the 
