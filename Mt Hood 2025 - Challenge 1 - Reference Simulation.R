@@ -211,3 +211,79 @@ allINTVF <- run_simulation(popF,
 
 write.csv(allINTVF, "Results/MtHoodReferenceSimulation, all interventions, Female.csv")
 
+#Repeatwith Trajectories
+#Mean
+
+controlMtraj <- run_simulation_MtHood2025_C1(popM,
+                                             parameter, 
+                                             40, 
+                                             "Baseline", 
+                                             GlobalVars,
+                                             rands,
+                                             LifeTables,
+                                             1, #Probably not needed, but set SOUR to 1 so determinsitic will be set regardless
+                                             MtHood2025C1Data)
+write.csv(controlMtraj, "Results/Challenge 1/Trajectories/MtHoodReferenceSimulation, no intv, Male.csv")
+
+A1cINTVMtraj <- run_simulation(popM,
+                           parameter, 
+                           40, 
+                           "Mt_HOOD_RS_A1c", 
+                           GlobalVars,
+                           rands,
+                           LifeTables,
+                           1, #Probably not needed, but set SOUR to 1 so determinsitic will be set regardless
+                           MtHood2025C1Data)
+
+write.csv(A1cINTVMtraj, "Results/Challenge 1/Trajectories/MtHoodReferenceSimulation, A1c only, Male.csv")
+
+
+BMIINTVMtraj <- run_simulation(popM,
+                           parameter, 
+                           40, 
+                           "Mt_HOOD_RS_BMI", 
+                           GlobalVars,
+                           rands,
+                           LifeTables,
+                           1, #Probably not needed, but set SOUR to 1 so deterministic will be set regardless
+                           MtHood2025C1Data)
+
+write.csv(BMIINTVMtraj, "Results/Challenge 1/Trajectories/MtHoodReferenceSimulation, BMI only, Male.csv")
+
+
+SBPINTVMtraj <- run_simulation(popM,
+                           parameter, 
+                           40, 
+                           "Mt_HOOD_RS_SBP", 
+                           GlobalVars,
+                           rands,
+                           LifeTables,
+                           1, #Probably not needed, but set SOUR to 1 so deterministic will be set regardless
+                           MtHood2025C1Data)
+
+write.csv(SBPINTVMtraj, "Results/Challenge 1/Trajectories/MtHoodReferenceSimulation, SBP only, Male.csv")
+
+LDLINTVMtraj <- run_simulation(popM,
+                           parameter, 
+                           40, 
+                           "Mt_HOOD_RS_LDL", 
+                           GlobalVars,
+                           rands,
+                           LifeTables,
+                           1, #Probably not needed, but set SOUR to 1 so deterministic will be set regardless
+                           MtHood2025C1Data)
+
+write.csv(LDLINTVMtraj, "Results/Challenge 1/Trajectories/MtHoodReferenceSimulation, LDL only, Male.csv")
+
+
+allINTVMtraj <- run_simulation(popM,
+                           parameter, 
+                           40, 
+                           "Mt_HOOD_RS_ALL", 
+                           GlobalVars,
+                           rands,
+                           LifeTables,
+                           1, #Probably not needed, but set SOUR to 1 so deterministic will be set regardless
+                           MtHood2025C1Data)
+
+write.csv(allINTVMtraj, "Results/Challenge 1/Trajectories/MtHoodReferenceSimulation, all interventions, Male.csv")

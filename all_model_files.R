@@ -39,3 +39,12 @@ allfiles <- list.files(path = "dataMtHood2025challenge2/", pattern = "\\.csv$", 
 MtHood2025C2Data <- lapply(allfiles, read.csv)
 #Make each object in the list have the same name as the .csv file
 names(MtHood2025C2Data) <- basename(allfiles)
+
+
+##Mt Hood 2025 Challenge 1, load everything in the data MtHood2025 challenge2 into the Global Envrioment as 1 list
+#Get the names of all files for Mt Hood 2025 Challenge 2
+allfiles <- list.files(path = "dataMtHood2025challenge1/", pattern = "\\.csv$", full.names=TRUE)
+#Read all files into the global enviroment, making them a list
+MtHood2025C1Data <- lapply(allfiles, read.csv)
+#Make each object in the list have the same name as the .csv file
+names(MtHood2025C1Data) <- basename(allfiles)
