@@ -90,3 +90,137 @@ sum(ifelse(test_pl_bc_cont[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[controlarm
 sum(ifelse(test_pl_bc_cont[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[controlarm,"Year.4"][alive],0,1))
 
 #Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
+
+test_pl_bc_intv <- run_simulation_MtHood2025_C2(pop_cont,
+                                                parameter,
+                                                5,
+                                                "BC_INTV",
+                                                GlobalVars,
+                                                LifeTables,
+                                                1,#SOUR, so 1 means deterministic model run
+                                                MtHood2025C2Data
+)
+
+
+alive <- is.na(test_pl_bc_intv[,"F_ALLCAUSE"])
+#Check the people alive for the 1st 5 years of simulation have their risk factor values at
+#the start of year 4
+sum(ifelse(test_pl_bc_intv[,"HDL"][alive]==MtHood2025C2Data$HDL.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"HBA"][alive]==MtHood2025C2Data$A1cBC.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"BMI"][alive]==MtHood2025C2Data$BMIBC.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"SBP"][alive]==MtHood2025C2Data$SBPBC.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"LDL"][alive]==MtHood2025C2Data$LDL.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_intv[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[interventionarm,"Year.4"][alive],0,1))
+
+#Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
+
+test_pl_s2_cont <- run_simulation_MtHood2025_C2(pop_cont,
+                                                parameter,
+                                                5,
+                                                "S2_Control",
+                                                GlobalVars,
+                                                LifeTables,
+                                                1,#SOUR, so 1 means deterministic model run
+                                                MtHood2025C2Data
+)
+
+#get a true false vector for being in the control arm
+controlarm <- MtHood2025C2Data$HDL.csv$Group == 1
+interventionarm <- MtHood2025C2Data$HDL.csv$Group == 2
+alive <- is.na(test_pl_s2_cont[,"F_ALLCAUSE"])
+#Check the people alive for the 1st 5 years of simulation have their risk factor values at
+#the start of year 4
+sum(ifelse(test_pl_s2_cont[,"HDL"][alive]==MtHood2025C2Data$HDL.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"HBA"][alive]==MtHood2025C2Data$A1cS2.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"BMI"][alive]==MtHood2025C2Data$BMIS2.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"SBP"][alive]==MtHood2025C2Data$SBPS2.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"LDL"][alive]==MtHood2025C2Data$LDL.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_cont[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[controlarm,"Year.4"][alive],0,1))
+
+#Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
+
+test_pl_s2_intv <- run_simulation_MtHood2025_C2(pop_cont,
+                                                parameter,
+                                                5,
+                                                "S2_INTV",
+                                                GlobalVars,
+                                                LifeTables,
+                                                1,#SOUR, so 1 means deterministic model run
+                                                MtHood2025C2Data
+)
+
+
+alive <- is.na(test_pl_s2_intv[,"F_ALLCAUSE"])
+#Check the people alive for the 1st 5 years of simulation have their risk factor values at
+#the start of year 4
+sum(ifelse(test_pl_s2_intv[,"HDL"][alive]==MtHood2025C2Data$HDL.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"HBA"][alive]==MtHood2025C2Data$A1cS2.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"BMI"][alive]==MtHood2025C2Data$BMIS2.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"SBP"][alive]==MtHood2025C2Data$SBPS2.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"LDL"][alive]==MtHood2025C2Data$LDL.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_s2_intv[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[interventionarm,"Year.4"][alive],0,1))
+
+#Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
+
+test_pl_ne_cont <- run_simulation_MtHood2025_C2(pop_cont,
+                                                parameter,
+                                                5,
+                                                "NoEffect_Control",
+                                                GlobalVars,
+                                                LifeTables,
+                                                1,#SOUR, so 1 means deterministic model run
+                                                MtHood2025C2Data
+)
+
+#get a true false vector for being in the control arm
+controlarm <- MtHood2025C2Data$HDL.csv$Group == 1
+interventionarm <- MtHood2025C2Data$HDL.csv$Group == 2
+alive <- is.na(test_pl_ne_cont[,"F_ALLCAUSE"])
+#Check the people alive for the 1st 5 years of simulation have their risk factor values at
+#the start of year 4
+sum(ifelse(test_pl_ne_cont[,"HDL"][alive]==MtHood2025C2Data$HDL.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"HBA"][alive]==MtHood2025C2Data$A1cNoEffect.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"BMI"][alive]==MtHood2025C2Data$BMINoEffect.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"SBP"][alive]==MtHood2025C2Data$SBPNoEffect.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"LDL"][alive]==MtHood2025C2Data$LDL.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_cont[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[controlarm,"Year.4"][alive],0,1))
+
+#Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
+
+test_pl_ne_intv <- run_simulation_MtHood2025_C2(pop_cont,
+                                                parameter,
+                                                5,
+                                                "NoEffect_INTV",
+                                                GlobalVars,
+                                                LifeTables,
+                                                1,#SOUR, so 1 means deterministic model run
+                                                MtHood2025C2Data
+)
+
+
+alive <- is.na(test_pl_ne_intv[,"F_ALLCAUSE"])
+#Check the people alive for the 1st 5 years of simulation have their risk factor values at
+#the start of year 4
+sum(ifelse(test_pl_ne_intv[,"HDL"][alive]==MtHood2025C2Data$HDL.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"HBA"][alive]==MtHood2025C2Data$A1cNoEffect.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"BMI"][alive]==MtHood2025C2Data$BMINoEffect.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"SBP"][alive]==MtHood2025C2Data$SBPNoEffect.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"LDL"][alive]==MtHood2025C2Data$LDL.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[interventionarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_ne_intv[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[interventionarm,"Year.4"][alive],0,1))
+
+#Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
