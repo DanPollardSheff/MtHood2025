@@ -250,6 +250,7 @@ update_history_MtHood2025C2 <- function(population_,
                                         WBC_,
                                         HR_,
                                         PVD_,
+                                        eGFR_,
                                         treatment_,
                                         year_,
                                         GlobalVars_){
@@ -311,6 +312,7 @@ update_history_MtHood2025C2 <- function(population_,
   population_[,"HAEM"][alive_]      <- HEAM_[,(year_+3)][alive_]
   population_[,"WBC"][alive_]       <- WBC_[,(year_+3)][alive_]
   population_[,"HEART_R"][alive_]   <- HR_[,(year_+3)][alive_]
+  population_[,"eGFR"][alive_]      <- eGFR_[,(year_+3)][alive_]
   
   #Binary risk factors
   #Record a new event if someone is recorded as Y in the datasets and they have
@@ -338,7 +340,8 @@ update_history_MtHood2025C2 <- function(population_,
   population_[,"BMI_U_18_5"] <- ifelse(population_[,"BMI"]<18.5,1,0)
   population_[,"BMI_O_E_25"] <- ifelse(population_[,"BMI"]>=25,1,0)
   population_[,"LDL_O_35"] <- ifelse(population_[,"LDL"]>3.5, population_[,"LDL"],0)
-  
+  population_[,"eGFR_U_60"][alive_] <- ifelse(population_[,"eGFR"][alive_]<60,population_[,"eGFR"][alive_],60)
+  population_[,"eGFR_O_60"][alive_] <- ifelse(population_[,"eGFR"][alive_]>60,0,population_[,"eGFR"][alive_]-60)
   
   
   #remove unnecessary variables

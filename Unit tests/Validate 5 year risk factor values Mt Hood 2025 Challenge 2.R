@@ -63,48 +63,30 @@ pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",Populat
 #Produce standard results for error checking
 GlobalVars["Results_output", "Value"] <- "Patient Level"
 
-test_pl <- run_simulation_MtHood2025_C2(pop_cont,
+test_pl_bc_cont <- run_simulation_MtHood2025_C2(pop_cont,
                                      parameter,
                                      5,
                                      "BC_Control",
                                      GlobalVars,
                                      LifeTables,
-                                     1,#SOUR, so 1 means determinsitic model run
+                                     1,#SOUR, so 1 means deterministic model run
                                      MtHood2025C2Data
 )
 
-GlobalVars["Results_output", "Value"] <- "MtHood2025C2"
+#get a true false vector for being in the control arm
+controlarm <- MtHood2025C2Data$HDL.csv$Group == 1
+interventionarm <- MtHood2025C2Data$HDL.csv$Group == 2
+alive <- is.na(test_pl_bc_cont[,"F_ALLCAUSE"])
+#Check the people alive for the 1st 5 years of simulation have their risk factor values at
+#the start of year 4
+sum(ifelse(test_pl_bc_cont[,"HDL"][alive]==MtHood2025C2Data$HDL.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"HBA"][alive]==MtHood2025C2Data$A1cBC.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"BMI"][alive]==MtHood2025C2Data$BMIBC.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"SBP"][alive]==MtHood2025C2Data$SBPBC.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"LDL"][alive]==MtHood2025C2Data$LDL.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[controlarm,"Year.4"][alive],0,1))
+sum(ifelse(test_pl_bc_cont[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[controlarm,"Year.4"][alive],0,1))
 
-
-test <- run_simulation_MtHood2025_C2(pop_cont,
-                            parameter,
-                            5,
-                            "BC_Control",
-                            GlobalVars,
-                            LifeTables,
-                            1,#SOUR, so 1 means determinsitic model run
-                            MtHood2025C2Data
-)
-
-#Return to default results
-GlobalVars["Results_output", "Value"] <- ""
-
-test_boot_cont <- run_model_bootstrap_MtHood2025_C2(pop_cont,
-                                               parameter,
-                                               50,
-                                               "BC_Control",
-                                               GlobalVars,
-                                               LifeTables,
-                                               MtHood2025C2Data,
-                                               20)
-#Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
-
-test_boot_intv <- run_model_bootstrap_MtHood2025_C2(pop_cont,
-                                               parameter,
-                                               50,
-                                               "BC_INTV",
-                                               GlobalVars,
-                                               LifeTables,
-                                               MtHood2025C2Data,
-                                               20)
-#Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
+#Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N

@@ -605,6 +605,7 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     WBC       <- subset(WBC,Group==1)
     HR        <- subset(HR,Group==1)
     PVD       <- subset(PVD,Group==1)
+    eGFR      <- subset(eGFR, Group==1)
   }else{
     A1c       <- subset(A1c,Group==2)
     BMI       <- subset(BMI,Group==2)
@@ -618,6 +619,8 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     WBC       <- subset(WBC,Group==2)
     HR        <- subset(HR,Group==2)
     PVD       <- subset(PVD,Group==2)
+    eGFR      <- subset(eGFR, Group==2)
+    
     
     #Change ID's back to 1 to 1000
     A1c$ID    <- 1:1000
@@ -632,6 +635,7 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     WBC$ID    <- 1:1000
     HR$ID     <- 1:1000
     PVD$ID    <- 1:1000
+    eGFR$ID   <- 1:1000
   }
   
   
@@ -723,6 +727,7 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
                                                WBC,
                                                HR,
                                                PVD,
+                                               eGFR,
                                                treatment_,
                                                year,
                                                GlobalVars_)
