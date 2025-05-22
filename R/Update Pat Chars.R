@@ -303,32 +303,32 @@ update_history_MtHood2025C2 <- function(population_,
   
   #update the risk factors for people who are alive
   #Continous risk factors
-  population_[,"HBA"][alive_]       <- A1c_[,(year_+3)][alive_]
-  population_[,"BMI"][alive_]       <- BMI_[,(year_+3)][alive_]
-  population_[,"SBP"][alive_]       <- SBP_[,(year_+3)][alive_]
-  population_[,"HDL"][alive_]       <- HDL_[,(year_+3)][alive_]
-  population_[,"LDL"][alive_]       <- LDL_[,(year_+3)][alive_]
-  population_[,"HAEM"][alive_]      <- HEAM_[,(year_+3)][alive_]
-  population_[,"WBC"][alive_]       <- WBC_[,(year_+3)][alive_]
-  population_[,"HEART_R"][alive_]   <- HR_[,(year_+3)][alive_]
+  population_[,"HBA"][alive_]       <- as.matrix(A1c_[,(year_+3)][alive_])
+  population_[,"BMI"][alive_]       <- as.matrix(BMI_[,(year_+3)][alive_])
+  population_[,"SBP"][alive_]       <- as.matrix(SBP_[,(year_+3)][alive_])
+  population_[,"HDL"][alive_]       <- as.matrix(HDL_[,(year_+3)][alive_])
+  population_[,"LDL"][alive_]       <- as.matrix(LDL_[,(year_+3)][alive_])
+  population_[,"HAEM"][alive_]      <- as.matrix(HEAM_[,(year_+3)][alive_])
+  population_[,"WBC"][alive_]       <- as.matrix(WBC_[,(year_+3)][alive_])
+  population_[,"HEART_R"][alive_]   <- as.matrix(HR_[,(year_+3)][alive_])
   
   #Binary risk factors
   #Record a new event if someone is recorded as Y in the datasets and they have
   #no history of the same event
   population_[,"MMALB_E"][alive_]     <- ifelse(population_[,"MMALB_H"][alive_]==0&
-                                                MMALB_[,(year_+3)][alive_]=="Y",
+                                                  as.matrix(MMALB_[,(year_+3)][alive_])=="Y",
                                                 1,
                                                 0)
   population_[,"PVD_E"][alive_]       <- ifelse(population_[,"PVD_H"][alive_]==0&
-                                                PVD_[,(year_+3)][alive_]=="Y",
+                                                  as.matrix(PVD_[,(year_+3)][alive_])=="Y",
                                                 1,
                                                 0)
   population_[,"ATFIB_E"][alive_]     <- ifelse(population_[,"ATFIB_H"][alive_]==0&
-                                                ATF_[,(year_+3)][alive_]=="Y",
+                                                  as.matrix(ATF_[,(year_+3)][alive_])=="Y",
                                                 1,
                                                 0)
   #For smoking just update the risk factor
-  population_[,"SMO"][alive_]         <- ifelse(SMO_[,(year_+3)][alive_]=="Y",
+  population_[,"SMO"][alive_]         <- ifelse(as.matrix(SMO_[,(year_+3)][alive_]=="Y"),
                                                 1,
                                                 0)
   
@@ -386,15 +386,16 @@ update_history_MtHood2025C1 <- function(population_,
                                         A1c_,
                                         BMI_,
                                         SBP_,
-                                        SMO_,       
+                                        SMO_,
                                         HDL_,
-                                        LDL_,       
+                                        LDL_,
                                         ATF_,
                                         MMALB_,
                                         HEAM_,
                                         WBC_,
                                         HR_,
                                         PVD_,
+                                        eGFR_,
                                         treatment_,
                                         year_,
                                         GlobalVars_){
@@ -446,51 +447,43 @@ update_history_MtHood2025C1 <- function(population_,
   #work out who survived this year
   alive <- is.na(population_[,"F_ALLCAUSE"])
   
-  #update the risk factors for people who are alive
-  #Continous risk factors
-  row_lookup <- ifelse(treatment_=="Baseline", 1,#Use the 1st row if control
-                       ifelse(treatment_=="Mt_HOOD_RS_A1c",2,#Use the 2nd row if A1c effect only
-                              ifelse(treatment_=="Mt_HOOD_RS_SBP",3,#Use the 3rd row if SBP effect only
-                                     ifelse(treatment_=="Mt_HOOD_RS_LDL",4,#Use the 4th row if LDL effect only
-                                            ifelse(treatment_=="Mt_HOOD_RS_BMI",5, #Use the 5th row if BMI effect only,
-                                                   6 )))))#if none of the above set the effect for all
-  
-  population_[,"HBA"][alive_]       <- A1c_[row_lookup,(year_+1)]
-  population_[,"BMI"][alive_]       <- BMI_[row_lookup,(year_+1)]
-  population_[,"SBP"][alive_]       <- SBP_[row_lookup,(year_+1)]
-  population_[,"HDL"][alive_]       <- HDL_[row_lookup,(year_+1)]
-  population_[,"LDL"][alive_]       <- LDL_[row_lookup,(year_+1)]
-  population_[,"HAEM"][alive_]      <- HEAM_[row_lookup,(year_+1)]
-  population_[,"WBC"][alive_]       <- WBC_[row_lookup,(year_+1)]
-  population_[,"HEART_R"][alive_]   <- HR_[row_lookup,(year_+1)]
+  #Update risk factors for anyone who is alive
+  population_[,"HBA"][alive]        <- A1c_[,year_+1][alive] 
+  population_[,"BMI"][alive]        <- BMI_[,year_+1][alive]
+  population_[,"SBP"][alive]        <- SBP_[,year_+1][alive]
+  population_[,"HDL"][alive]        <- HDL_[,year_+1][alive]
+  population_[,"LDL"][alive]        <- LDL_[,year_+1][alive]
+  population_[,"HAEM"][alive]       <- HEAM_[,year_+1][alive]
+  population_[,"WBC"][alive]        <- WBC_[,year_+1][alive]
+  population_[,"HEART_R"][alive]    <- HR_[,year_+1][alive]
+  population_[,"eGFR"][alive]       <- eGFR_[,year_+1][alive]
   
   #Binary risk factors
-  #Record a new event if someone is recorded as Y in the datasets and they have
-  #no history of the same event
-  population_[,"MMALB_E"][alive_]     <- ifelse(population_[,"MMALB_H"][alive_]==0&
-                                                  MMALB_[row_lookup,(year_+1)]=="Y",
+  population_[,"MMALB_E"][alive]     <- ifelse(population_[,"MMALB_H"][alive]==0&
+                                                  MMALB_[,(year_+1)][alive]=="Y",
                                                 1,
                                                 0)
-  population_[,"PVD_E"][alive_]       <- ifelse(population_[,"PVD_H"][alive_]==0&
-                                                  PVD_[row_lookup,(year_+1)]==-"Y",
+  population_[,"PVD_E"][alive]       <- ifelse(population_[,"PVD_H"][alive]==0&
+                                                  as.matrix(PVD_[,(year_+1)][alive])=="Y",
                                                 1,
                                                 0)
-  population_[,"ATFIB_E"][alive_]     <- ifelse(population_[,"ATFIB_H"][alive_]==0&
-                                                  ATF_[,(year_+3)][alive_]=="Y",
+  population_[,"ATFIB_E"][alive]     <- ifelse(population_[,"ATFIB_H"][alive]==0&
+                                                  as.matrix(ATF_[,(year_+1)][alive])=="Y",
                                                 1,
                                                 0)
   #For smoking just update the risk factor
-  population_[,"SMO"][alive_]         <- ifelse(SMO_[,(year_+3)][alive_]=="Y",
+  population_[,"SMO"][alive]         <- ifelse(as.matrix(SMO_[,(year_+1)][alive]=="Y"),
                                                 1,
                                                 0)
   
   
   
-  #update the binary variables
+  #update the binary variables / knots
   population_[,"BMI_U_18_5"] <- ifelse(population_[,"BMI"]<18.5,1,0)
   population_[,"BMI_O_E_25"] <- ifelse(population_[,"BMI"]>=25,1,0)
   population_[,"LDL_O_35"] <- ifelse(population_[,"LDL"]>3.5, population_[,"LDL"],0)
-  
+  population_[,"eGFR_U_60"][alive] <- ifelse(population_[,"eGFR"][alive]<60,population_[,"eGFR"][alive],60)
+  population_[,"eGFR_O_60"][alive] <- ifelse(population_[,"eGFR"][alive]>60,0,population_[,"eGFR"][alive]-60)
   
   
   #remove unnecessary variables
