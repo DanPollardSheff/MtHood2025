@@ -62,6 +62,7 @@ if(folder_check==F){
 pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",PopulationVariables)
 #Produce standard results for error checking
 GlobalVars["Results_output", "Value"] <- "Patient Level"
+GlobalVars_["Mt Hood Utilities", "Value"] <- "C2"
 
 test_pl <- run_simulation_MtHood2025_C2(pop_cont,
                                      parameter,
