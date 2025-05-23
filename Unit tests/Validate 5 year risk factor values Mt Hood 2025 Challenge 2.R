@@ -89,6 +89,24 @@ sum(ifelse(test_pl_bc_cont[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[controlarm
 sum(ifelse(test_pl_bc_cont[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[controlarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_bc_cont[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[controlarm,"Year.4"][alive],0,1))
 
+PVDdata <- ifelse(MtHood2025C2Data$PVD.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+PVDpat <- ifelse(test_pl_bc_cont[,"PVD_E"][alive]==1|test_pl_bc_cont[,"PVD_H"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(PVDpat==PVDdata,0,1))
+
+AFdata <- ifelse(MtHood2025C2Data$AF.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+AFpat <- ifelse(test_pl_bc_cont[,"ATFIB_E"][alive]==1|test_pl_bc_cont[,"ATFIB_H"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(AFpat==AFdata,0,1))
+
+SMOdata <- ifelse(MtHood2025C2Data$Smoking.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+SMOpat <- ifelse(test_pl_bc_cont[,"SMO"][alive]==1,
+                1,
+                0) 
+sum(ifelse(SMOpat==SMOdata,0,1))
+
 #Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
 
 test_pl_bc_intv <- run_simulation_MtHood2025_C2(pop_cont,
@@ -114,6 +132,25 @@ sum(ifelse(test_pl_bc_intv[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[intervention
 sum(ifelse(test_pl_bc_intv[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[interventionarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_bc_intv[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[interventionarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_bc_intv[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[interventionarm,"Year.4"][alive],0,1))
+
+PVDdata <- ifelse(MtHood2025C2Data$PVD.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+PVDpat <- ifelse(test_pl_bc_intv[,"PVD_E"][alive]==1|test_pl_bc_intv[,"PVD_H"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(PVDpat==PVDdata,0,1))
+
+AFdata <- ifelse(MtHood2025C2Data$AF.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+AFpat <- ifelse(test_pl_bc_intv[,"ATFIB_E"][alive]==1|test_pl_bc_intv[,"ATFIB_H"][alive]==1,
+                1,
+                0) 
+sum(ifelse(AFpat==AFdata,0,1))
+
+SMOdata <- ifelse(MtHood2025C2Data$Smoking.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+SMOpat <- ifelse(test_pl_bc_intv[,"SMO"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(SMOpat==SMOdata,0,1))
+
 
 #Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
 
@@ -143,6 +180,26 @@ sum(ifelse(test_pl_s2_cont[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[controlarm
 sum(ifelse(test_pl_s2_cont[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[controlarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_s2_cont[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[controlarm,"Year.4"][alive],0,1))
 
+
+PVDdata <- ifelse(MtHood2025C2Data$PVD.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+PVDpat <- ifelse(test_pl_s2_cont[,"PVD_E"][alive]==1|test_pl_bc_intv[,"PVD_H"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(PVDpat==PVDdata,0,1))
+
+AFdata <- ifelse(MtHood2025C2Data$AF.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+AFpat <- ifelse(test_pl_s2_cont[,"ATFIB_E"][alive]==1|test_pl_bc_intv[,"ATFIB_H"][alive]==1,
+                1,
+                0) 
+sum(ifelse(AFpat==AFdata,0,1))
+
+SMOdata <- ifelse(MtHood2025C2Data$Smoking.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+SMOpat <- ifelse(test_pl_s2_cont[,"SMO"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(SMOpat==SMOdata,0,1))
+
+
 #Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
 
 test_pl_s2_intv <- run_simulation_MtHood2025_C2(pop_cont,
@@ -168,6 +225,25 @@ sum(ifelse(test_pl_s2_intv[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[intervention
 sum(ifelse(test_pl_s2_intv[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[interventionarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_s2_intv[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[interventionarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_s2_intv[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[interventionarm,"Year.4"][alive],0,1))
+
+PVDdata <- ifelse(MtHood2025C2Data$PVD.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+PVDpat <- ifelse(test_pl_s2_intv[,"PVD_E"][alive]==1|test_pl_bc_intv[,"PVD_H"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(PVDpat==PVDdata,0,1))
+
+AFdata <- ifelse(MtHood2025C2Data$AF.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+AFpat <- ifelse(test_pl_s2_intv[,"ATFIB_E"][alive]==1|test_pl_bc_intv[,"ATFIB_H"][alive]==1,
+                1,
+                0) 
+sum(ifelse(AFpat==AFdata,0,1))
+
+SMOdata <- ifelse(MtHood2025C2Data$Smoking.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+SMOpat <- ifelse(test_pl_s2_intv[,"SMO"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(SMOpat==SMOdata,0,1))
+
 
 #Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
 
@@ -197,6 +273,24 @@ sum(ifelse(test_pl_ne_cont[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[controlarm
 sum(ifelse(test_pl_ne_cont[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[controlarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_ne_cont[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[controlarm,"Year.4"][alive],0,1))
 
+PVDdata <- ifelse(MtHood2025C2Data$PVD.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+PVDpat <- ifelse(test_pl_ne_cont[,"PVD_E"][alive]==1|test_pl_bc_intv[,"PVD_H"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(PVDpat==PVDdata,0,1))
+
+AFdata <- ifelse(MtHood2025C2Data$AF.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+AFpat <- ifelse(test_pl_ne_cont[,"ATFIB_E"][alive]==1|test_pl_bc_intv[,"ATFIB_H"][alive]==1,
+                1,
+                0) 
+sum(ifelse(AFpat==AFdata,0,1))
+
+SMOdata <- ifelse(MtHood2025C2Data$Smoking.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+SMOpat <- ifelse(test_pl_ne_cont[,"SMO"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(SMOpat==SMOdata,0,1))
+
 #Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N
 
 test_pl_ne_intv <- run_simulation_MtHood2025_C2(pop_cont,
@@ -222,5 +316,23 @@ sum(ifelse(test_pl_ne_intv[,"WBC"][alive]==MtHood2025C2Data$WBC.csv[intervention
 sum(ifelse(test_pl_ne_intv[,"HAEM"][alive]==MtHood2025C2Data$HEAM.csv[interventionarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_ne_intv[,"eGFR"][alive]==MtHood2025C2Data$eGFR.csv[interventionarm,"Year.4"][alive],0,1))
 sum(ifelse(test_pl_ne_intv[,"HEART_R"][alive]==MtHood2025C2Data$HR.csv[interventionarm,"Year.4"][alive],0,1))
+
+PVDdata <- ifelse(MtHood2025C2Data$PVD.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+PVDpat <- ifelse(test_pl_ne_intv[,"PVD_E"][alive]==1|test_pl_bc_intv[,"PVD_H"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(PVDpat==PVDdata,0,1))
+
+AFdata <- ifelse(MtHood2025C2Data$AF.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+AFpat <- ifelse(test_pl_ne_intv[,"ATFIB_E"][alive]==1|test_pl_bc_intv[,"ATFIB_H"][alive]==1,
+                1,
+                0) 
+sum(ifelse(AFpat==AFdata,0,1))
+
+SMOdata <- ifelse(MtHood2025C2Data$Smoking.csv[controlarm,"Year.4"][alive]=="Y",1,0)
+SMOpat <- ifelse(test_pl_ne_intv[,"SMO"][alive]==1,
+                 1,
+                 0) 
+sum(ifelse(SMOpat==SMOdata,0,1))
 
 #Make a plan to check categorical variables, PL data frame is based on 0 (no event), 1 event. But data is Y, N

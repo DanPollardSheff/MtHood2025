@@ -69,7 +69,7 @@ test_pl <- run_simulation_MtHood2025_C2(pop_cont,
                                      "BC_Control",
                                      GlobalVars,
                                      LifeTables,
-                                     1,#SOUR, so 1 means determinsitic model run
+                                     1,#SOUR, so 1 means deterministic model run
                                      MtHood2025C2Data
 )
 
