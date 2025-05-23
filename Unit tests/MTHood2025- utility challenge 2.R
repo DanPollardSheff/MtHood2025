@@ -450,6 +450,9 @@ if(CHFevent[,"EQ5D"]!= 0.807-0.101){
 
 rm(CHFevent)
 
+popM[,"CHF_E"] <- 0
+popM[,"CHF_H"] <- 1
+
 CHFhist <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
@@ -460,3 +463,46 @@ if(CHFhist[,"EQ5D"]!= 0.807-0.101){
 }
 
 rm(CHFhist)
+
+popM[,"MI_H"] <- 1
+popM[,"IHD_H"] <- 1
+
+CHFhist <- calculate_QALYs_MtHood2025_C2(popM,
+                                         0,
+                                         T, 
+                                         GlobalVars)
+
+if(CHFhist[,"EQ5D"]!= 0.807-0.101){
+  stop("Error in the application of CHF decrement, when people also have IHD and MI for previous years, for the mean values in Mt Hood reference simulation 2025")
+}
+
+rm(CHFhist)
+
+popM[,"STRO2_H"] <- 1
+
+CHFhist <- calculate_QALYs_MtHood2025_C2(popM,
+                                         0,
+                                         T, 
+                                         GlobalVars)
+
+if(CHFhist[,"EQ5D"]!= 0.807-0.165){
+  stop("Error in the application of strkoe decrement, when people also have IHD, CHF and MI for previous years, for the mean values in Mt Hood reference simulation 2025")
+}
+
+rm(CHFhist)
+
+#Reset Amputation
+popM[,"AMP2_E"] <- 0
+popM[,"AMP2_H"] <- 1
+###Active ulcer
+popM[,"ULCER_E"] <- 1
+popM[,"ULCER_H"] <- 0
+
+CHF_ulcer_amp_hist <-calculate_QALYs_MtHood2025_C2(popM,
+                                                   0,
+                                                   T, 
+                                                   GlobalVars)
+
+if(CHF_ulcer_amp_hist[,"EQ5D"]!= 0.807-0.165-0.210){
+  stop("Error in the application of stroke decrement & Ulcer decrements, when people also have IHD, CHF, MI and amputations for previous years, for the mean values in Mt Hood reference simulation 2025")
+}
