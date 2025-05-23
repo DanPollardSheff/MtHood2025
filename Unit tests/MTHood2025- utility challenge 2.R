@@ -12,12 +12,12 @@ popM[,"BMI_0"] <- 25
 
 #see if the baseline value is correct using the same function used in the model
 
-nocomps_notoverweight <- calculate_QALYs_MtHood2025(popM,
+nocomps_notoverweight <- calculate_QALYs_MtHood2025_C2(popM,
                                                     0,
                                                     T,
                                                     GlobalVars)
-if(nocomps_notoverweight[,"EQ5D"]!= 0.785){
-  stop("Error in the baseline probability, for the mean values in Mt Hood reference simulation 2025")
+if(nocomps_notoverweight[,"EQ5D"]!= 0.807){
+  stop("Error in the baseline probability, for the mean values in  Mt Hood challenge 2 simulation  2025")
 }
 
 rm(nocomps_notoverweight)
@@ -26,13 +26,13 @@ rm(nocomps_notoverweight)
 popM[,"BMI"] <- 26
 popM[,"BMI_0"] <- 26
 
-nocomps_BMI26 <- calculate_QALYs_MtHood2025(popM,
+nocomps_BMI26 <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T,
                                             GlobalVars)
 
-if(nocomps_BMI26[,"EQ5D"]!= 0.785 - 0.006){
-  stop("Error in the application of BMI decrements, for the mean values in Mt Hood reference simulation 2025")
+if(nocomps_BMI26[,"EQ5D"]!= 0.807){
+  stop("Error in the application of BMI decrements, for the mean values in Mt Hood challenge 2 simulation 2025")
 }
 rm(nocomps_BMI26)
 
@@ -40,12 +40,12 @@ rm(nocomps_BMI26)
 popM[,"BMI"] <- 27
 popM[,"BMI_0"] <- 27
 
-nocomps_BMI27 <- calculate_QALYs_MtHood2025(popM,
+nocomps_BMI27 <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T,
                                             GlobalVars)
 
-if(nocomps_BMI27[,"EQ5D"]!= 0.785 - (0.006*2)){
+if(nocomps_BMI27[,"EQ5D"]!= 0.807){
   stop("Error in the application of BMI decrements, for the mean values in Mt Hood reference simulation 2025")
 }
 rm(nocomps_BMI27)
@@ -59,12 +59,12 @@ popM[,"BMI_0"] <- 25
 popM[,"BLIND_E"] <- 1
 popM[,"BLIND_H"] <- 0
 
-blindthisyear <- calculate_QALYs_MtHood2025(popM,
+blindthisyear <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T,
                                             GlobalVars)
 
-if(blindthisyear[,"EQ5D"]!= 0.785 - 0.074){
+if(blindthisyear[,"EQ5D"]!= 0.807){
   stop("Error in the application of blindness decrement, for the mean values in Mt Hood reference simulation 2025") 
 }
 rm(blindthisyear)
@@ -73,12 +73,12 @@ rm(blindthisyear)
 popM[,"BLIND_E"] <- 0
 popM[,"BLIND_H"] <- 1
 
-blindlastyear <- calculate_QALYs_MtHood2025(popM,
+blindlastyear <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T,
                                             GlobalVars)
 
-if(blindlastyear[,"EQ5D"]!= 0.785 - 0.074){
+if(blindlastyear[,"EQ5D"]!= 0.807){
   stop("Error in the application of blindness decrement, for the mean values in Mt Hood reference simulation 2025") 
 }
 rm(blindlastyear)
@@ -92,12 +92,12 @@ popM[,"BLIND_H"] <- 0
 popM[,"MMALB_E"] <- 1
 popM[,"MMALB_H"] <- 0
 
-MMALBthisyear <- calculate_QALYs_MtHood2025(popM,
+MMALBthisyear <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T,
                                             GlobalVars)
 
-if(MMALBthisyear[,"EQ5D"]!= 0.785 - 0.048){
+if(MMALBthisyear[,"EQ5D"]!= 0.807){
   stop("Error in the application of MMALB decrement, for the mean values in Mt Hood reference simulation 2025") 
 }
 rm(MMALBthisyear)
@@ -106,12 +106,12 @@ rm(MMALBthisyear)
 popM[,"MMALB_H"] <- 0
 popM[,"MMALB_E"] <- 1
 
-MMALBlastyear <- calculate_QALYs_MtHood2025(popM,
+MMALBlastyear <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T,
                                             GlobalVars)
 
-if(MMALBlastyear[,"EQ5D"]!= 0.785 - 0.048){
+if(MMALBlastyear[,"EQ5D"]!= 0.807){
   stop("Error in the application of MMALB decrement, for the mean values in Mt Hood reference simulation 2025") 
 }
 rm(MMALBlastyear)
@@ -122,38 +122,31 @@ rm(MMALBlastyear)
 popM[,"RENAL_E"] <- 1
 popM[,"RENAL_H"] <- 0
 
-RENALthisyear <- calculate_QALYs_MtHood2025(popM,
+RENALthisyear <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T, 
                                             GlobalVars)
-#Weights are from pg3, https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf
-renaldec_thisyear <- (540)/(540+39+6127+1548)*-0.082+
-                      (39+6127)/(540+39+6127+1548)*-0.164+
-                     (1548)/(540+39+6127+1548)*-0.204
 
-if(RENALthisyear[,"EQ5D"]!= 0.785 + renaldec_thisyear){
+
+if(RENALthisyear[,"EQ5D"]!= 0.807 - 0.330){
   stop("Error in the application of renal decrement, year 1, for the mean values in Mt Hood reference simulation 2025") 
 }
 
-rm(RENALthisyear, renaldec_thisyear)
+rm(RENALthisyear)
 
 popM[,"RENAL_E"] <- 0
 popM[,"RENAL_H"] <- 1
 
-RENALnextyear <- calculate_QALYs_MtHood2025(popM,
+RENALnextyear <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T, 
                                             GlobalVars)
-#Weights are from pg3, https://www.ukkidney.org/sites/default/files/UK%20Renal%20Registry%20Annual%20Report%202022%20Patient%20Summary.pdf
-renaldec_previousyears <- (39874)/(39874+1452+25825+3800)*-0.082+
-  (1452+25825)/(39874+1452+25825+3800)*-0.164+
-  (3800)/(39874+1452+25825+3800)*-0.204
 
-if(RENALnextyear[,"EQ5D"]!= 0.785 + renaldec_previousyears){
+if(RENALnextyear[,"EQ5D"]!= 0.807 - 0.330){
   stop("Error in the application of renal decrement, subsequent years, for the mean values in Mt Hood reference simulation 2025") 
 }
 
-rm(RENALnextyear, renaldec_previousyears)
+rm(RENALnextyear)
 
 #Reset renal failures / MMALB
 popM[,"RENAL_E"] <- 0
@@ -166,12 +159,12 @@ popM[,"PVD_E"] <- 1
 popM[,"PVD_H"] <- 0
 
 
-PVDthisyear <- calculate_QALYs_MtHood2025(popM,
+PVDthisyear <- calculate_QALYs_MtHood2025_C2(popM,
                                             0,
                                             T, 
                                             GlobalVars)
 
-if(PVDthisyear[,"EQ5D"]!= 0.785 + -0.061){
+if(PVDthisyear[,"EQ5D"]!= 0.807){
   stop("Error in the application of PVD decrement, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -180,12 +173,12 @@ rm(PVDthisyear)
 popM[,"PVD_E"] <- 0
 popM[,"PVD_H"] <- 1
 
-PVDnextyear <- calculate_QALYs_MtHood2025(popM,
+PVDnextyear <- calculate_QALYs_MtHood2025_C2(popM,
                                           0,
                                           T, 
                                           GlobalVars)
 
-if(PVDnextyear[,"EQ5D"]!= 0.785 + -0.061){
+if(PVDnextyear[,"EQ5D"]!= 0.807){
   stop("Error in the application of PVD decrement, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -197,12 +190,12 @@ rm(PVDnextyear)
 popM[,"ULCER_E"] <- 1
 popM[,"ULCER_H"] <- 0
 
-ulceryear <- calculate_QALYs_MtHood2025(popM,
+ulceryear <- calculate_QALYs_MtHood2025_C2(popM,
                                         0,
                                         T, 
                                         GlobalVars)
 
-if(ulceryear[,"EQ5D"]!= 0.785 + -0.170){
+if(ulceryear[,"EQ5D"]!= 0.807 -0.210){
   stop("Error in the application of Ulcer decrement, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -212,13 +205,13 @@ rm(ulceryear)
 popM[,"ULCER_E"] <- 0
 popM[,"ULCER_H"] <- 1
 
-ulcerhist <- calculate_QALYs_MtHood2025(popM,
+ulcerhist <- calculate_QALYs_MtHood2025_C2(popM,
                                         0,
                                         T, 
                                         GlobalVars)
 
 #For ulcer history, the ulcer decrement should be ignored so the decrmenet for PVD should still apply
-if(ulcerhist[,"EQ5D"]!= 0.785 + -0.061){
+if(ulcerhist[,"EQ5D"]!= 0.807 -0.210){
   stop("Error in the application of Ulcer decrement, for ulcers over 1 year ago, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -231,12 +224,12 @@ popM[,"ULCER_H"] <- 0
 popM[,"AMP_E"] <- 1
 popM[,"AMP_H"] <- 0
 
-ampevent <- calculate_QALYs_MtHood2025(popM,
+ampevent <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 
-if(ampevent[,"EQ5D"]!= 0.785 - 0.280){
+if(ampevent[,"EQ5D"]!= 0.807 -0.172){
   stop("Error in the application of amputation decrement, for amputations in the last year, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -246,12 +239,12 @@ rm(ampevent)
 popM[,"AMP_E"] <- 0
 popM[,"AMP_H"] <- 1
 
-amphist <- calculate_QALYs_MtHood2025(popM,
+amphist <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 #If an amputation history, PVD decrements should still apply
-if(amphist[,"EQ5D"]!= 0.785 +  -0.061){
+if(amphist[,"EQ5D"]!= 0.807 -0.172){
   stop("Error in the application of amputation decrement, for amputations over 1 year ago, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -263,12 +256,12 @@ popM[,"AMP_H"] <- 0
 popM[,"AMP2_E"] <- 1
 popM[,"AMP2_H"] <- 0
 
-amp2event <- calculate_QALYs_MtHood2025(popM,
+amp2event <- calculate_QALYs_MtHood2025_C2(popM,
                                         0,
                                         T, 
                                         GlobalVars)
 
-if(amp2event[,"EQ5D"]!= 0.785-0.280){
+if(amp2event[,"EQ5D"]!= 0.807 -0.172){
   stop("Error in the application of amputation decrement, for a 2nd amputation this year, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -277,12 +270,12 @@ rm(amp2event)
 popM[,"AMP2_E"] <- 0
 popM[,"AMP2_H"] <- 1
 
-amp2hist <- calculate_QALYs_MtHood2025(popM,
+amp2hist <- calculate_QALYs_MtHood2025_C2(popM,
                                         0,
                                         T, 
                                         GlobalVars)
 #If an amputation history, PVD decrements should still apply
-if(amp2hist[,"EQ5D"]!= 0.785+  -0.061){
+if(amp2hist[,"EQ5D"]!= 0.807 -0.172){
   stop("Error in the application of amputation decrement, for a 2nd amputation in previous years, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -299,12 +292,12 @@ popM[,"PVD_H"] <- 0
 popM[,"STRO_E"] <- 1
 popM[,"STRO_H"] <- 0
 
-stroevent <- calculate_QALYs_MtHood2025(popM,
+stroevent <- calculate_QALYs_MtHood2025_C2(popM,
                                         0,
                                         T, 
                                         GlobalVars)
 
-if(stroevent[,"EQ5D"]!= 0.785-0.164){
+if(stroevent[,"EQ5D"]!= 0.807 -0.165){
   stop("Error in the application of stroke decrement, for 1st stroke this year, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -313,12 +306,12 @@ rm(stroevent)
 popM[,"STRO_E"] <- 0
 popM[,"STRO_H"] <- 1
 
-strohist <- calculate_QALYs_MtHood2025(popM,
+strohist <- calculate_QALYs_MtHood2025_C2(popM,
                                         0,
                                         T, 
                                         GlobalVars)
 
-if(strohist[,"EQ5D"]!= 0.785-0.164){
+if(strohist[,"EQ5D"]!= 0.807 -0.165){
   stop("Error in the application of stroke decrement, for 1st stroke previous years, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -327,12 +320,12 @@ rm(strohist)
 popM[,"STRO2_E"] <- 1
 popM[,"STRO2_H"] <- 0
 
-stro2event <- calculate_QALYs_MtHood2025(popM,
+stro2event <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 
-if(stro2event[,"EQ5D"]!= 0.785-(0.164)){
+if(stro2event[,"EQ5D"]!= 0.807 -0.165){
   stop("Error in the application of stroke decrement, for 2nd stroke this years, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -341,12 +334,12 @@ rm(stro2event)
 popM[,"STRO2_E"] <- 0
 popM[,"STRO2_H"] <- 1
 
-stro2hist <- calculate_QALYs_MtHood2025(popM,
+stro2hist <- calculate_QALYs_MtHood2025_C2(popM,
                                          0,
                                          T, 
                                          GlobalVars)
 
-if(stro2hist[,"EQ5D"]!= 0.785-(0.164)){
+if(stro2hist[,"EQ5D"]!= 0.807 -0.165){
   stop("Error in the application of stroke decrement, for 2nd stroke this years, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -362,12 +355,12 @@ popM[,"STRO_H"] <- 0
 popM[,"MI_E"] <- 1
 popM[,"MI_H"] <- 0
 
-MI1event <- calculate_QALYs_MtHood2025(popM,
+MI1event <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 
-if(MI1event[,"EQ5D"]!= 0.785 - 0.055){
+if(MI1event[,"EQ5D"]!= 0.807 - 0.065){
   stop("Error in the application of 1st MI decrement, for the event year, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -376,12 +369,12 @@ rm(MI1event)
 popM[,"MI_E"] <- 0
 popM[,"MI_H"] <- 1
 
-MI1hist <- calculate_QALYs_MtHood2025(popM,
+MI1hist <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 
-if(MI1hist[,"EQ5D"]!= 0.785 - 0.055){
+if(MI1hist[,"EQ5D"]!= 0.807){
   stop("Error in the application of 1st MI decrement, for the event year, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -390,12 +383,12 @@ rm(MI1hist)
 popM[,"MI2_E"] <- 1
 popM[,"MI2_H"] <- 0
 
-MI2event <- calculate_QALYs_MtHood2025(popM,
+MI2event <- calculate_QALYs_MtHood2025_C2(popM,
                                       0,
                                       T, 
                                       GlobalVars)
 
-if(MI2event[,"EQ5D"]!= 0.785 - 0.055){
+if(MI2event[,"EQ5D"]!= 0.807 - 0.065){
   stop("Error in the application of 2nd MI decrement, for the event year, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -404,12 +397,12 @@ rm(MI2event)
 popM[,"MI2_E"] <- 0
 popM[,"MI2_H"] <- 1
 
-MI2hist <- calculate_QALYs_MtHood2025(popM,
+MI2hist <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 
-if(MI2hist[,"EQ5D"]!= 0.785 - 0.055){
+if(MI2hist[,"EQ5D"]!= 0.807){
   stop("Error in the application of 2nd MI decrement, for historical events, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -418,12 +411,12 @@ rm(MI2hist)
 popM[,"IHD_E"] <- 1
 popM[,"IHD_H"] <- 0
 
-IHDevent <- calculate_QALYs_MtHood2025(popM,
+IHDevent <- calculate_QALYs_MtHood2025_C2(popM,
                                       0,
                                       T, 
                                       GlobalVars)
 
-if(IHDevent[,"EQ5D"]!= 0.785 - 0.09){
+if(IHDevent[,"EQ5D"]!= 0.807){
   stop("Error in the application of IHD decrement, for event year, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -432,12 +425,12 @@ rm(IHDevent)
 popM[,"IHD_E"] <- 0
 popM[,"IHD_H"] <- 1
 
-IHDhist <- calculate_QALYs_MtHood2025(popM,
+IHDhist <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 
-if(IHDhist[,"EQ5D"]!= 0.785 - 0.09){
+if(IHDhist[,"EQ5D"]!= 0.807){
   stop("Error in the application of IHD decrement, for previous years, for the mean values in Mt Hood reference simulation 2025")
 }
 
@@ -446,23 +439,23 @@ rm(IHDhist)
 popM[,"CHF_E"] <- 1
 popM[,"CHF_H"] <- 0
 
-CHFevent <- calculate_QALYs_MtHood2025(popM,
+CHFevent <- calculate_QALYs_MtHood2025_C2(popM,
                                       0,
                                       T, 
                                       GlobalVars)
 
-if(CHFevent[,"EQ5D"]!= 0.785 - 0.108){
+if(CHFevent[,"EQ5D"]!= 0.807-0.101){
   stop("Error in the application of CHF decrement, for event year, for the mean values in Mt Hood reference simulation 2025")
 }
 
 rm(CHFevent)
 
-CHFhist <- calculate_QALYs_MtHood2025(popM,
+CHFhist <- calculate_QALYs_MtHood2025_C2(popM,
                                        0,
                                        T, 
                                        GlobalVars)
 
-if(CHFhist[,"EQ5D"]!= 0.785 - 0.108){
+if(CHFhist[,"EQ5D"]!= 0.807-0.101){
   stop("Error in the application of CHF decrement, for previous years, for the mean values in Mt Hood reference simulation 2025")
 }
 
