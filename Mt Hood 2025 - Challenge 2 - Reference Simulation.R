@@ -61,51 +61,56 @@ if(folder_check==F){
 ################################################################################
 pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",PopulationVariables)
 #Produce standard results for error checking
-GlobalVars["Results_output", "Value"] <- "Patient Level"
-GlobalVars_["Mt Hood Utilities", "Value"] <- "C2"
+GlobalVars["Results_output", "Value"] <- "MtHood2025C2"
+GlobalVars["Mt Hood Utilities", "Value"] <- "C2"
 
-test_pl <- run_simulation_MtHood2025_C2(pop_cont,
-                                     parameter,
-                                     5,
-                                     "BC_Control",
-                                     GlobalVars,
-                                     LifeTables,
-                                     1,#SOUR, so 1 means deterministic model run
-                                     MtHood2025C2Data
-)
 
 GlobalVars["Results_output", "Value"] <- "MtHood2025C2"
 
+test_boot_cont_p1 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
+                                                    parameter,
+                                                    5,
+                                                    "BC_Control",
+                                                    GlobalVars,
+                                                    LifeTables,
+                                                    MtHood2025C2Data,
+                                                    100000)
+#Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
+saveRDS(test_boot_cont_p1, "Results/Challenge 2/challengepart1_control.csv")
 
-test <- run_simulation_MtHood2025_C2(pop_cont,
-                            parameter,
-                            5,
-                            "BC_Control",
-                            GlobalVars,
-                            LifeTables,
-                            1,#SOUR, so 1 means determinsitic model run
-                            MtHood2025C2Data
-)
+test_boot_intv_p1 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
+                                                    parameter,
+                                                    5,
+                                                    "BC_INTV",
+                                                    GlobalVars,
+                                                    LifeTables,
+                                                    MtHood2025C2Data,
+                                                    100000)
 
-#Return to default results
-GlobalVars["Results_output", "Value"] <- ""
+saveRDS(test_boot_intv_p1, "Results/Challenge 2/challengepart1_intervention.csv")
 
-test_boot_cont <- run_model_bootstrap_MtHood2025_C2(pop_cont,
-                                               parameter,
-                                               50,
-                                               "BC_Control",
-                                               GlobalVars,
-                                               LifeTables,
-                                               MtHood2025C2Data,
-                                               20)
+GlobalVars["Results_output", "Value"] <- "Summary"
+
+test_boot_cont_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
+                                                       parameter,
+                                                       50,
+                                                       "BC_Control",
+                                                       GlobalVars,
+                                                       LifeTables,
+                                                       MtHood2025C2Data,
+                                                       10000)
+
+saveRDS(test_boot_cont_p2, "Results/Challenge 2/challengepart1_control.csv")
+
 #Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
 
-test_boot_intv <- run_model_bootstrap_MtHood2025_C2(pop_cont,
-                                               parameter,
-                                               50,
-                                               "BC_INTV",
-                                               GlobalVars,
-                                               LifeTables,
-                                               MtHood2025C2Data,
-                                               20)
-#Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
+test_boot_intv_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
+                                                       parameter,
+                                                       50,
+                                                       "BC_INTV",
+                                                       GlobalVars,
+                                                       LifeTables,
+                                                       MtHood2025C2Data,
+                                                       10000)
+
+saveRDS(test_boot_intv_p2, "Results/Challenge 2/challengepart1_intervention.csv")

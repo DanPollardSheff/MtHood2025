@@ -704,7 +704,7 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     }
     
     ##QALYs
-    population_ <- calculate_QALYs(population_, parameters_,  year, alive, GlobalVars_)
+    population_ <- calculate_QALYs_MtHood2025_C2(population_,  year, alive, GlobalVars_)
     ##Costs
     population_ <- calculate_costs_MtHood2025_C2(population_, year, alive, GlobalVars_)
     
@@ -758,11 +758,11 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
     
     #In years 3 and 4, record Life Years, QALYs and Costs for the challenge
     #Also, collect these data for everyone, not just the dead people
-    if(year ==3){
+    if(year == 2){
       population_[,"LY_Y3"]   <- population_[,"YearsLived"]
       population_[,"QALY_Y3"] <- population_[,"QALY"]
       population_[,"Cost_Y3"] <- population_[,"COST"]
-    }else if (year == 4){
+    }else if (year == 3){
       population_[,"LY_Y4"]   <- population_[,"YearsLived"]
       population_[,"QALY_Y4"] <- population_[,"QALY"]
       population_[,"Cost_Y4"] <- population_[,"COST"]
@@ -774,8 +774,7 @@ run_simulation_MtHood2025_C2 <- function(population_, parameters_, endtime_, tre
   
   
   #For now return the Detailed results table or the population matrix if the run is deterministic
-  if(GlobalVars_["Results_output", "Value"] == "Summary"&
-     GlobalVars_["run_psa", "Value"]==T){
+  if(GlobalVars_["Results_output", "Value"] == "Summary"){
     psaresults <- matrix(data=NA,nrow=1,ncol=24)
     #Life Years
     psaresults[,1] <- sum(results["Undiscounted life years accrued",],na.rm=TRUE)/length(population_[,"ID"])
