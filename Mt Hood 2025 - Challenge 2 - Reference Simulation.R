@@ -78,6 +78,28 @@ test_boot_cont_p1 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
 #Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
 saveRDS(test_boot_cont_p1, "Results/Challenge 2/challengepart1_control.csv")
 
+rm(list = ls())
+#Create the Global options matrix
+source("Global Options.R")
+#Load in population and data files
+source("all_model_files.R")
+
+################################################################################
+#Check if there is a folder called Results, and if not make it (it will be 
+#ignored by git version control and anything saved here will not be on Github)
+folder_check <- file.exists("Results/Challenge 2")
+if(folder_check==F){
+  dir.create("Results/Challenge 2")
+}
+################################################################################
+pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",PopulationVariables)
+#Produce standard results for error checking
+GlobalVars["Results_output", "Value"] <- "MtHood2025C2"
+GlobalVars["Mt Hood Utilities", "Value"] <- "C2"
+
+
+GlobalVars["Results_output", "Value"] <- "MtHood2025C2"
+
 test_boot_intv_p1 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                     parameter,
                                                     5,
@@ -89,6 +111,23 @@ test_boot_intv_p1 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
 
 saveRDS(test_boot_intv_p1, "Results/Challenge 2/challengepart1_intervention.csv")
 
+rm(list = ls())
+#Create the Global options matrix
+source("Global Options.R")
+#Load in population and data files
+source("all_model_files.R")
+
+################################################################################
+#Check if there is a folder called Results, and if not make it (it will be 
+#ignored by git version control and anything saved here will not be on Github)
+folder_check <- file.exists("Results/Challenge 2")
+if(folder_check==F){
+  dir.create("Results/Challenge 2")
+}
+################################################################################
+pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",PopulationVariables)
+#Produce standard results for error checking
+GlobalVars["Mt Hood Utilities", "Value"] <- "C2"
 GlobalVars["Results_output", "Value"] <- "Summary"
 
 test_boot_cont_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
@@ -101,7 +140,24 @@ test_boot_cont_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                        10000)
 
 saveRDS(test_boot_cont_p2, "Results/Challenge 2/challengepart1_control.csv")
+rm(list = ls())
+#Create the Global options matrix
+source("Global Options.R")
+#Load in population and data files
+source("all_model_files.R")
 
+################################################################################
+#Check if there is a folder called Results, and if not make it (it will be 
+#ignored by git version control and anything saved here will not be on Github)
+folder_check <- file.exists("Results/Challenge 2")
+if(folder_check==F){
+  dir.create("Results/Challenge 2")
+}
+################################################################################
+pop_cont <- build_population_MtHood2025_C2(MtHood2025C2Data,"BC_Control",PopulationVariables)
+#Produce standard results for error checking
+GlobalVars["Mt Hood Utilities", "Value"] <- "C2"
+GlobalVars["Results_output", "Value"] <- "Summary"
 #Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
 
 test_boot_intv_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
