@@ -76,7 +76,7 @@ test_boot_cont_p1 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                     MtHood2025C2Data,
                                                     100000)
 #Note SOUR not set, as it is fixed at 1 within the bootstrapping function for Mt Hood problem
-saveRDS(test_boot_cont_p1, "Results/Challenge 2/challengepart1_control.csv")
+saveRDS(test_boot_cont_p1, "Results/Challenge 2/challengepart1_control.rds")
 
 rm(list = ls())
 #Create the Global options matrix
@@ -109,7 +109,7 @@ test_boot_intv_p1 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                     MtHood2025C2Data,
                                                     100000)
 
-saveRDS(test_boot_intv_p1, "Results/Challenge 2/challengepart1_intervention.csv")
+saveRDS(test_boot_intv_p1, "Results/Challenge 2/challengepart1_intervention.rds")
 
 rm(list = ls())
 #Create the Global options matrix
@@ -139,7 +139,7 @@ test_boot_cont_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                        MtHood2025C2Data,
                                                        10000)
 
-saveRDS(test_boot_cont_p2, "Results/Challenge 2/challengepart1_control.csv")
+saveRDS(test_boot_cont_p2, "Results/Challenge 2/challengepart1_control.rds")
 rm(list = ls())
 #Create the Global options matrix
 source("Global Options.R")
@@ -169,4 +169,4 @@ test_boot_intv_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                        MtHood2025C2Data,
                                                        10000)
 
-saveRDS(test_boot_intv_p2, "Results/Challenge 2/challengepart1_intervention.csv")
+saveRDS(test_boot_intv_p2, "Results/Challenge 2/challengepart1_intervention.rds")
