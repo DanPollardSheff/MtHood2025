@@ -139,7 +139,7 @@ test_boot_cont_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                        MtHood2025C2Data,
                                                        10000)
 
-saveRDS(test_boot_cont_p2, "Results/Challenge 2/challengepart1_control.rds")
+saveRDS(test_boot_cont_p2, "Results/Challenge 2/challengepart2_control.rds")
 rm(list = ls())
 #Create the Global options matrix
 source("Global Options.R")
@@ -169,4 +169,4 @@ test_boot_intv_p2 <- run_model_bootstrap_MtHood2025_C2(pop_cont,
                                                        MtHood2025C2Data,
                                                        10000)
 
-saveRDS(test_boot_intv_p2, "Results/Challenge 2/challengepart1_intervention.rds")
+saveRDS(test_boot_intv_p2, "Results/Challenge 2/challengepart2_intervention.rds")
